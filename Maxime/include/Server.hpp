@@ -21,7 +21,7 @@
 #include<sys/types.h>
 #include<stdlib.h>
 #include<stdio.h>
-#include<string.h>
+#include<string>
 #include<iostream>
 #include<stack>
 #include<vector>
@@ -46,6 +46,7 @@ class Server
 		int	readMessage();
 		static void	handle_signal(int signal);
 		void	ConnectClient();
+		void	Message();
 	
 	private:
 		int numConnection;

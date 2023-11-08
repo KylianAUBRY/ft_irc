@@ -23,9 +23,11 @@ Server::~Server()
 
 int Server::InitializeServ()
 {
+	int opt = 1;
 	std::signal(SIGINT, Server::handle_signal);
 	poll_fds = new std::vector<pollfd>( SOMAXCONN + 1 );
 	this->SServer.fd = socket(AF_INET, SOCK_STREAM, 0);
+	setsockopt(this->SServer.fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt));
 	if (this->SServer.fd == -1)
 	{
 		perror("socket");
@@ -55,59 +57,34 @@ int Server::InitializeServ()
 	while (Stop == 0)
 	{
 		std::vector<pollfd> &client_fds = *poll_fds;
+		
+
 
 		int num_ready = poll( client_fds.data(), this->numConnection + 1, -1 );
 		if ( num_ready == -1 && Stop == 1 )
 			std::cout << "\nServer: intercepted signal" << std::endl;
 		else if ( num_ready == -1 && Stop == 1 )
 			std::cout << "\nServer: Poll error" << std::endl;
+		
+		
+		
+		
+	
+		Message();
 		ConnectClient();
 		
-		
-		
-		
-		
-		
-		for (int i = 1; i <= this->numConnection; i++)
-    {
-        if (client_fds[i].revents & POLLIN)
-        {
-            char buffer[1024];
-            ssize_t bytesRead = recv(client_fds[i].fd, buffer, sizeof(buffer), 0);
-
-            if (bytesRead > 0)
-            {
-                std::string message(buffer, bytesRead);
-
-                // Votre logique de traitement des commandes ici
-                if (message.find("/mycustomcommand") == 0)
-                {
-                    // Interceptez la commande /mycustomcommand
-                    // Effectuez les actions associées à cette commande
-                    std::string parameters = message.substr(15); // Pour extraire les paramètres de la commande
-                    // Faites ce que vous devez faire avec les paramètres
-                    std::cout << "Commande personnalisée interceptée : " << parameters << std::endl;
-                }
-            }
-        }
-    }
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+	
 	}
 		
 	close(this->SServer.fd);
+	for (int i = 1; i <= this->numConnection + 2; i++)
+	{
+	
+	if (client_fds[i].revents)
+	{
+		close(client_fds[i].fd);
+	}
+	}
 	std::cout << "close" << std::endl;
 	
 	return 0;
@@ -142,6 +119,57 @@ void	Server::ConnectClient()
 		std::cout << "New client connected: " << this->SClient.fd << std::endl;
 		this->numConnection++;
 		new User(this->SClient.fd);
+		client_fds[this->numConnection + 1].fd = this->SClient.fd;
+		std::cout << "num : " << this->SClient.fd << std::endl;
+		client_fds[this->numConnection + 1].events = POLLIN | POLLOUT;
+		
+		
+		// Réponse à la commande CAP LS (envoyer la liste des capacités)
+		std::string capabilities = "sasl";  // Liste des capacités prises en charge par le serveur
+		std::string response = "CAP * LS :" + capabilities + "\r\n";
+		send(this->SClient.fd, response.c_str(), response.size(), 0);
+		
+		// Vérifier le mot de passe du client
+		
+		    std::string response2 = ":localhost 001 mlangloi :Welcome to the IRC server\r\n";
+		    send(this->SClient.fd, response2.c_str(), response2.size(), 0);
+		
+		
+		// Accepter le changement de pseudonyme
+		std::string response3 = ":mlangloi!mlangloi@host mlangloi :mlangloi\r\n";
+		send(this->SClient.fd, response3.c_str(), response3.size(), 0);
+
+
+	// Accepter les informations de l'utilisateur
+		std::string response4 = ":localhost 001 mlangloi :Welcome to the IRC server\r\n";
+		send(this->SClient.fd, response4.c_str(), response4.size(), 0);
+
+
+
+		
 	}
 			
 }
+
+void	Server::Message()
+{
+	std::vector<pollfd> &client_fds = *poll_fds;
+	
+	for (int i = 1; i <= this->numConnection + 2; i++)
+	{
+	
+	if (client_fds[i].revents & POLLIN)
+	{
+		char buffer[1024];
+		ssize_t bytesRead = recv(client_fds[i].fd, buffer, sizeof(buffer), 0);
+
+		if (bytesRead > 0)
+		{
+			std::cout << "i : " << i << " et client : " << client_fds[i].fd << " et numconn : " << this->numConnection + 1 << std::endl;
+			std::string message(buffer, bytesRead);
+			std::cout << "Commande interceptée : " << message << std::endl;
+		}
+	    }
+	}
+	
+}	
