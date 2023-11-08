@@ -1,24 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/08 13:59:17 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/08 14:43:10 by kyaubry          ###   ########.fr       */
+/*   Created: 2023/11/08 14:31:57 by kyaubry           #+#    #+#             */
+/*   Updated: 2023/11/08 15:46:26 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#pragma once
 
-int main(int argc, char **argv)
+# include "include.hpp"
+
+class Server
 {
-	if (argc != 3)
-	{
-		std::cout << "./ircserv <port> <password>" << '\n';
-		return 1;
-	}
-	Server serv(argv[1], argv[2]);
-	
-}
+	public :
+		Server(std::string const &port, std::string const &password);
+		~Server();
+		
+	private :
+		Server();
+		int _port;
+		const std::string _password;
+		
+};
