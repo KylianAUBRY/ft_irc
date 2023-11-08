@@ -46,7 +46,6 @@ class Server
 		Server();
 		~Server();
 		int	InitializeServ();
-		int	readMessage();
 		static void	handle_signal(int signal);
 		void	ConnectClient();
 		void	Message();

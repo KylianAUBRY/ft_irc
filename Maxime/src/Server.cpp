@@ -71,12 +71,10 @@ int Server::InitializeServ()
 		
 
 		ConnectClient();
-
-		for (const User& user : UserTab) 
-		{
-			HandleMessage(user);
+		Message();
+		 for (std::vector<User>::const_iterator it = UserTab.begin(); it != UserTab.end(); ++it) 		{
+		 	HandleMessage(*it, client_fds);
 		}
-
 
 
 	
@@ -94,13 +92,6 @@ int Server::InitializeServ()
 	std::cout << "close" << std::endl;
 	
 	return 0;
-}
-
-int Server::readMessage()
-{
-	std::cout << "test" << std::endl;
-	while (1);
-	
 }
 
 void	Server::handle_signal(int signal)
@@ -124,8 +115,8 @@ void	Server::ConnectClient()
 		}
 		std::cout << "New client connected: " << this->SClient.fd << std::endl;
 		this->numConnection++;
-		User = new User(this->SClient.fd);
-		UserTab.push_back(User);
+		User newUser(this->SClient.fd);
+		UserTab.push_back(newUser);
 		client_fds[this->numConnection + 1].fd = this->SClient.fd;
 		client_fds[this->numConnection + 1].events = POLLIN | POLLOUT;
 		
@@ -157,4 +148,24 @@ void	Server::ConnectClient()
 			
 }
 
+
+void	Server::Message()
+{
+	std::vector<pollfd> &client_fds = *poll_fds;
+
+	if (client_fds[2].revents & POLLIN)
+	{
+		char buffer[1024];
+		ssize_t bytesRead = recv(client_fds[2].fd, buffer, sizeof(buffer), 0);
+
+		if (bytesRead > 0)
+		{
+			std::cout << "i : " << 2 << " et client : " << client_fds[2].fd << " et numconn : " << this->numConnection + 1 << std::endl;
+			std::string message(buffer, bytesRead);
+			std::cout << "Commande interceptée : " << message << std::endl;
+		}
+	    
+	}
+
+}	
 

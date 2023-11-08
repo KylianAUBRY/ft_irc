@@ -20,6 +20,8 @@ class User
 	public:
 		User(int socket);
 		~User();
+		int getSocket();
+	
 		
 	
 	private:
@@ -30,6 +32,6 @@ class User
 
 };
 
-void	HandleMessage(User user);
+void	HandleMessage(User user, std::vector<pollfd> client_fds);
 
 #endif
