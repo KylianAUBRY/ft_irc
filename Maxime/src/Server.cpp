@@ -69,10 +69,16 @@ int Server::InitializeServ()
 		
 		
 		
-	
-		Message();
+
 		ConnectClient();
-		
+
+		for (const User& user : UserTab) 
+		{
+			HandleMessage(user);
+		}
+
+
+
 	
 	}
 		
@@ -118,12 +124,12 @@ void	Server::ConnectClient()
 		}
 		std::cout << "New client connected: " << this->SClient.fd << std::endl;
 		this->numConnection++;
-		new User(this->SClient.fd);
+		User = new User(this->SClient.fd);
+		UserTab.push_back(User);
 		client_fds[this->numConnection + 1].fd = this->SClient.fd;
-		std::cout << "num : " << this->SClient.fd << std::endl;
 		client_fds[this->numConnection + 1].events = POLLIN | POLLOUT;
 		
-		
+		/*
 		// Réponse à la commande CAP LS (envoyer la liste des capacités)
 		std::string capabilities = "sasl";  // Liste des capacités prises en charge par le serveur
 		std::string response = "CAP * LS :" + capabilities + "\r\n";
@@ -143,7 +149,7 @@ void	Server::ConnectClient()
 	// Accepter les informations de l'utilisateur
 		std::string response4 = ":localhost 001 mlangloi :Welcome to the IRC server\r\n";
 		send(this->SClient.fd, response4.c_str(), response4.size(), 0);
-
+*/
 
 
 		
@@ -151,25 +157,4 @@ void	Server::ConnectClient()
 			
 }
 
-void	Server::Message()
-{
-	std::vector<pollfd> &client_fds = *poll_fds;
-	
-	for (int i = 1; i <= this->numConnection + 2; i++)
-	{
-	
-	if (client_fds[i].revents & POLLIN)
-	{
-		char buffer[1024];
-		ssize_t bytesRead = recv(client_fds[i].fd, buffer, sizeof(buffer), 0);
 
-		if (bytesRead > 0)
-		{
-			std::cout << "i : " << i << " et client : " << client_fds[i].fd << " et numconn : " << this->numConnection + 1 << std::endl;
-			std::string message(buffer, bytesRead);
-			std::cout << "Commande interceptée : " << message << std::endl;
-		}
-	    }
-	}
-	
-}	

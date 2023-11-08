@@ -30,4 +30,6 @@ class User
 
 };
 
+void	HandleMessage(User user);
+
 #endif

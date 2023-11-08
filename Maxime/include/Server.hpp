@@ -27,7 +27,10 @@
 #include<vector>
 #include <csignal>
 #include <poll.h>
+#include <iterator>
 #include"../include/User.hpp"
+
+class User;
 
 static bool Stop = 0;
 
@@ -53,7 +56,7 @@ class Server
 		std::vector<pollfd> * poll_fds;
 		s_socket SClient;
 		s_socket SServer;
-		
+		std::vector<User> UserTab;
 
 };
 
