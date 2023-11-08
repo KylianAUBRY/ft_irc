@@ -31,6 +31,12 @@
 
 static bool Stop = 0;
 
+struct s_socket
+{
+	int fd;
+	struct sockaddr_in info; 
+};
+
 class Server
 {
 	public:
@@ -43,9 +49,9 @@ class Server
 	
 	private:
 		int numConnection;
-		int socketServer;
-		std::stack<int> socketClient;
 		std::vector<pollfd> * poll_fds;
+		s_socket SClient;
+		s_socket SServer;
 		
 
 };

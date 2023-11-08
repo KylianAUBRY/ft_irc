@@ -12,7 +12,7 @@
 
 #include"User.hpp"
 
-User::User(int socket) : username("user"), socket(socket), password(false)
+User::User(int socket) : username("user"), socket(socket)
 {
 	std::cout << "aaaaaaaaaa" << this->username << this->socket << std::endl;
 }

@@ -25,7 +25,6 @@ class User
 	private:
 		std::string username;
 		int socket;
-		bool password;
 		
 		
 
