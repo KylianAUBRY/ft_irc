@@ -6,13 +6,19 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 14:31:57 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/08 15:46:26 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/09 17:21:40 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 # include "include.hpp"
+
+struct s_socket
+{
+	int fd;
+	struct sockaddr_in info; 
+};
 
 class Server
 {
@@ -24,5 +30,12 @@ class Server
 		Server();
 		int _port;
 		const std::string _password;
+		s_socket SClient;
+		s_socket SServer;
+
+		pollfd *client_fds;
 		
+		void	ConnectClient();
+		bool Server_start();
+		bool Server_loop();
 };
