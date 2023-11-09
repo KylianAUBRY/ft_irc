@@ -12,6 +12,10 @@
 
 #include"User.hpp"
 
+User::User()
+{
+}
+
 User::User(int socket) : username("user"), socket(socket)
 {
 	std::cout << "aaaaaaaaaa" << this->username << this->socket << std::endl;
@@ -26,19 +30,48 @@ int User::getSocket()
 	return (this->socket);
 }
 
-void	HandleMessage(User user, std::vector<pollfd> client_fds)
+void	HandleMessage(User user, int num, std::vector<pollfd> client_fds)
 {
-	if (client_fds[user.getSocket()].revents & POLLIN)
+	if (client_fds[num].revents & POLLIN)
 	{
 		char buffer[1024];
-		ssize_t bytesRead = recv(client_fds[user.getSocket()].fd, buffer, sizeof(buffer), 0);
+		ssize_t bytesRead = recv(client_fds[num].fd, buffer, sizeof(buffer), 0);
 
 		if (bytesRead > 0)
 		{
-			
 			std::string message(buffer, bytesRead);
-			std::cout << "Commande interceptée : " << message << std::endl;
+			ParseCommand(user, message);
 		}
-	    }
+	    
+	}
 	
+}
+
+void	ParseCommand(User user, std::string message)
+{
+	size_t end = message.find("\r\n", 0);
+	size_t pos = 0;
+	while (end != std::string::npos)
+	{
+		std::string firstCommand = message.substr(pos, end + 2 - pos);
+		pos = end + 2;
+		FindCommand(user, firstCommand);
+		end = message.find("\r\n", pos);
+	}
+	(void)user;
+}
+
+void	FindCommand(User user, std::string command)
+{
+	size_t pos1 = command.find(' ');
+	size_t pos2 = command.find(' ', pos1 + 1);
+	if (command.substr(0, pos1) == "CAP")
+		std::cout << "le cap est : " << command.substr(pos1 + 1, pos2 - pos1 - 1) << std::endl;
+	if (command.substr(0, pos1) == "PASS")
+	std::cout << "le mot de passe est : " << command.substr(pos1 + 1, pos2 - pos1 - 1) << std::endl;
+	if (command.substr(0, pos1) == "NICK")
+	std::cout << "le nom est : " << command.substr(pos1 + 1, pos2 - pos1 - 1) << std::endl;
+	if (command.substr(0, pos1) == "USER")
+	std::cout << "l'utilisateur est : " << command.substr(pos1 + 1, pos2 - pos1 - 1) << std::endl;
+	(void)user;
 }

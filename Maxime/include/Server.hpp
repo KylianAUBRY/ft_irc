@@ -25,6 +25,7 @@
 #include<iostream>
 #include<stack>
 #include<vector>
+#include <map>
 #include <csignal>
 #include <poll.h>
 #include <iterator>
@@ -55,7 +56,7 @@ class Server
 		std::vector<pollfd> * poll_fds;
 		s_socket SClient;
 		s_socket SServer;
-		std::vector<User> UserTab;
+		std::map<int, User> UserTab;
 
 };
 

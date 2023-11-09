@@ -18,6 +18,7 @@
 class User
 {
 	public:
+		User();
 		User(int socket);
 		~User();
 		int getSocket();
@@ -32,6 +33,8 @@ class User
 
 };
 
-void	HandleMessage(User user, std::vector<pollfd> client_fds);
+void	HandleMessage(User user, int num, std::vector<pollfd> client_fds);
+void	ParseCommand(User user, std::string message);
+void	FindCommand(User user, std::string firstCommand);
 
 #endif

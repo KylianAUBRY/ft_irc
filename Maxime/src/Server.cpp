@@ -57,27 +57,21 @@ int Server::InitializeServ()
 	while (Stop == 0)
 	{
 		std::vector<pollfd> &client_fds = *poll_fds;
-		
-
-
 		int num_ready = poll( client_fds.data(), this->numConnection + 1, -1 );
 		if ( num_ready == -1 && Stop == 1 )
 			std::cout << "\nServer: intercepted signal" << std::endl;
 		else if ( num_ready == -1 && Stop == 1 )
 			std::cout << "\nServer: Poll error" << std::endl;
-		
-		
-		
-		
-
 		ConnectClient();
-		Message();
-		 for (std::vector<User>::const_iterator it = UserTab.begin(); it != UserTab.end(); ++it) 		{
-		 	HandleMessage(*it, client_fds);
+		std::map<int, User>::iterator it;
+		for (it = UserTab.begin(); it != UserTab.end(); ++it)
+		{
+			int num = it->first;
+			User user = it->second;
+			HandleMessage(user, num + 1, client_fds);
 		}
 
 
-	
 	}
 		
 	close(this->SServer.fd);
@@ -114,12 +108,11 @@ void	Server::ConnectClient()
 			return ;
 		}
 		std::cout << "New client connected: " << this->SClient.fd << std::endl;
-		this->numConnection++;
-		User newUser(this->SClient.fd);
-		UserTab.push_back(newUser);
+		User user(this->SClient.fd);
+		UserTab[this->numConnection] = user;
 		client_fds[this->numConnection + 1].fd = this->SClient.fd;
 		client_fds[this->numConnection + 1].events = POLLIN | POLLOUT;
-		
+		this->numConnection++;
 		/*
 		// Réponse à la commande CAP LS (envoyer la liste des capacités)
 		std::string capabilities = "sasl";  // Liste des capacités prises en charge par le serveur
@@ -148,24 +141,4 @@ void	Server::ConnectClient()
 			
 }
 
-
-void	Server::Message()
-{
-	std::vector<pollfd> &client_fds = *poll_fds;
-
-	if (client_fds[2].revents & POLLIN)
-	{
-		char buffer[1024];
-		ssize_t bytesRead = recv(client_fds[2].fd, buffer, sizeof(buffer), 0);
-
-		if (bytesRead > 0)
-		{
-			std::cout << "i : " << 2 << " et client : " << client_fds[2].fd << " et numconn : " << this->numConnection + 1 << std::endl;
-			std::string message(buffer, bytesRead);
-			std::cout << "Commande interceptée : " << message << std::endl;
-		}
-	    
-	}
-
-}	
 
