@@ -35,6 +35,11 @@ class User
 
 void	HandleMessage(User user, int num, std::vector<pollfd> client_fds);
 void	ParseCommand(User user, std::string message);
-void	FindCommand(User user, std::string firstCommand);
+void	FindCommand(User user, std::string command);
+void	CommandCAP(User user);
+void	CommandPASS(User user);
+void	CommandNICK(User user);
+void	CommandUSER(User user);
+
 
 #endif

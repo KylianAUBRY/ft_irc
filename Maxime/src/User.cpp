@@ -66,7 +66,10 @@ void	FindCommand(User user, std::string command)
 	size_t pos1 = command.find(' ');
 	size_t pos2 = command.find(' ', pos1 + 1);
 	if (command.substr(0, pos1) == "CAP")
+	{
 		std::cout << "le cap est : " << command.substr(pos1 + 1, pos2 - pos1 - 1) << std::endl;
+		
+	}
 	if (command.substr(0, pos1) == "PASS")
 	std::cout << "le mot de passe est : " << command.substr(pos1 + 1, pos2 - pos1 - 1) << std::endl;
 	if (command.substr(0, pos1) == "NICK")
@@ -74,4 +77,29 @@ void	FindCommand(User user, std::string command)
 	if (command.substr(0, pos1) == "USER")
 	std::cout << "l'utilisateur est : " << command.substr(pos1 + 1, pos2 - pos1 - 1) << std::endl;
 	(void)user;
+}
+
+void	CommandCAP(User user)
+{
+	std::string capabilities = "sasl";
+	std::string response = "CAP * LS :" + capabilities + "\r\n";
+	send(this->SClient.fd, response.c_str(), response.size(), 0);
+}
+
+void	CommandPASS(User user)
+{
+	std::string response2 = ":localhost 001 mlangloi :Welcome to the IRC server\r\n";
+	send(this->SClient.fd, response2.c_str(), response2.size(), 0);
+}
+
+void	CommandNICK(User user)
+{
+	std::string response3 = ":mlangloi!mlangloi@host mlangloi :mlangloi\r\n";
+		send(this->SClient.fd, response3.c_str(), response3.size(), 0);
+}
+
+void	CommandUSER(User user)
+{
+	std::string response4 = ":localhost 001 mlangloi :Welcome to the IRC server\r\n";
+		send(this->SClient.fd, response4.c_str(), response4.size(), 0);
 }
