@@ -23,6 +23,8 @@ class User
 		~User();
 		int getSocket();
 		int getNum();
+		void setUsername(std::string name);
+		std::string getUsername();
 	
 		
 	
@@ -40,8 +42,9 @@ void	ParseCommand(User user, std::string message);
 void	FindCommand(User user, std::string command);
 void	CommandCAP(User user);
 void	CommandPASS(User user);
-void	CommandNICK(User user);
+void	CommandNICK(User user, std::string message);
 void	CommandUSER(User user);
-
+void	CommandJOIN(User user, std::string message);
+void	CommandPRIVMSG(User user, std::string message);
 
 #endif

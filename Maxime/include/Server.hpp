@@ -30,6 +30,7 @@
 #include <poll.h>
 #include <iterator>
 #include"../include/User.hpp"
+#include"../include/Channel.hpp"
 
 class User;
 

@@ -113,29 +113,6 @@ void	Server::ConnectClient()
 		client_fds[this->numConnection + 1].fd = this->SClient.fd;
 		client_fds[this->numConnection + 1].events = POLLIN | POLLOUT;
 		this->numConnection++;
-		
-		/*// Réponse à la commande CAP LS (envoyer la liste des capacités)
-		std::string capabilities = "sasl";  // Liste des capacités prises en charge par le serveur
-		std::cout << "tttttttttttttttttest " << this->SClient.fd << std::endl;
-		std::string response = "CAP * LS :" + capabilities + "\r\n";
-		send(this->SClient.fd, response.c_str(), response.size(), 0);
-		*/
-		/*
-		// Vérifier le mot de passe du client
-		
-		    std::string response2 = ":localhost 001 mlangloi :Welcome to the IRC server\r\n";
-		    send(this->SClient.fd, response2.c_str(), response2.size(), 0);
-		
-		
-		// Accepter le changement de pseudonyme
-		std::string response3 = ":mlangloi!mlangloi@host mlangloi :mlangloi\r\n";
-		send(this->SClient.fd, response3.c_str(), response3.size(), 0);
-
-
-	// Accepter les informations de l'utilisateur
-		std::string response4 = ":localhost 001 mlangloi :Welcome to the IRC server\r\n";
-		send(this->SClient.fd, response4.c_str(), response4.size(), 0);
-*/
 
 
 		

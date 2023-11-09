@@ -35,10 +35,21 @@ int User::getNum()
 	return (this->num);
 }
 
+std::string User::getUsername()
+{
+	return (this->username);
+}
+
+void User::setUsername(std::string name)
+{
+	this->username = name;
+}
+
 void	HandleMessage(User user, int num, std::vector<pollfd> client_fds)
 {
 	if (client_fds[num].revents & POLLIN)
 	{
+		std::cout << user.User::getUsername() << "\n";
 		char buffer[1024];
 		ssize_t bytesRead = recv(client_fds[num].fd, buffer, sizeof(buffer), 0);
 
@@ -70,7 +81,7 @@ void	ParseCommand(User user, std::string message)
 void	FindCommand(User user, std::string command)
 {
 	size_t pos1 = command.find(' ');
-	//size_t pos2 = command.find(' ', pos1 + 1);
+	size_t pos2 = command.find(' ', pos1 + 1);
 	if (command.substr(0, pos1) == "CAP")
 	{
 		CommandCAP(user);
@@ -81,11 +92,19 @@ void	FindCommand(User user, std::string command)
 	}
 	if (command.substr(0, pos1) == "NICK")
 	{
-		CommandNICK(user);
+		CommandNICK(user, command.substr(pos1 + 1, pos2));
 	}
 	if (command.substr(0, pos1) == "USER")
 	{
 		CommandUSER(user);
+	}
+	if (command.substr(0, pos1) == "JOIN")
+	{
+		CommandJOIN(user, command.substr(pos1 + 1, pos2));
+	}
+	if (command.substr(0, pos1) == "PRIVMSG")
+	{
+		CommandPRIVMSG(user, command.substr(pos1, pos2));
 	}
 }
 
@@ -102,8 +121,9 @@ void	CommandPASS(User user)
 	send(user.getNum(), response2.c_str(), response2.size(), 0);
 }
 
-void	CommandNICK(User user)
+void	CommandNICK(User user, std::string message)
 {
+	user.User::setUsername(message);
 	std::string response3 = ":mlangloi!mlangloi@host mlangloi :mlangloi\r\n";
 	send(user.getNum(), response3.c_str(), response3.size(), 0);
 }
@@ -112,4 +132,19 @@ void	CommandUSER(User user)
 {
 	std::string response4 = ":localhost 001 mlangloi :Welcome to the IRC server\r\n";
 	send(user.getNum(), response4.c_str(), response4.size(), 0);
+}
+
+void	CommandJOIN(User user, std::string message)
+{
+	std::cout << "mess : " << message << std::endl;
+	JoinChannel(user, message);
+	
+	
+	//send(user.getNum(), response4.c_str(), response4.size(), 0);
+}
+
+void	CommandPRIVMSG(User user, std::string message)
+{
+	std::cout << "mess : " << message << std::endl;
+	(void)user;
 }

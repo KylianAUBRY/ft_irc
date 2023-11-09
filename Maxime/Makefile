@@ -34,6 +34,7 @@ HEADERS_DIR =	./include
 FILES =		main.cpp \
 			Server.cpp \
 			User.cpp \
+			Channel.cpp
 
 SRCS =			$(foreach FILE, $(FILES), $(shell find $(SOURCES_DIR) -name $(FILE)))
 
