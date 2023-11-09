@@ -108,17 +108,19 @@ void	Server::ConnectClient()
 			return ;
 		}
 		std::cout << "New client connected: " << this->SClient.fd << std::endl;
-		User user(this->SClient.fd);
+		User user(this->SClient.fd, this->SClient.fd);
 		UserTab[this->numConnection] = user;
 		client_fds[this->numConnection + 1].fd = this->SClient.fd;
 		client_fds[this->numConnection + 1].events = POLLIN | POLLOUT;
 		this->numConnection++;
-		/*
-		// Réponse à la commande CAP LS (envoyer la liste des capacités)
+		
+		/*// Réponse à la commande CAP LS (envoyer la liste des capacités)
 		std::string capabilities = "sasl";  // Liste des capacités prises en charge par le serveur
+		std::cout << "tttttttttttttttttest " << this->SClient.fd << std::endl;
 		std::string response = "CAP * LS :" + capabilities + "\r\n";
 		send(this->SClient.fd, response.c_str(), response.size(), 0);
-		
+		*/
+		/*
 		// Vérifier le mot de passe du client
 		
 		    std::string response2 = ":localhost 001 mlangloi :Welcome to the IRC server\r\n";

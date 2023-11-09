@@ -16,9 +16,9 @@ User::User()
 {
 }
 
-User::User(int socket) : username("user"), socket(socket)
+User::User(int socket, int num) : username("user"), socket(socket), num(num)
 {
-	std::cout << "aaaaaaaaaa" << this->username << this->socket << std::endl;
+	std::cout << "User cree : " << this->username << this->socket << std::endl;
 }
 
 User::~User()
@@ -28,6 +28,11 @@ User::~User()
 int User::getSocket()
 {
 	return (this->socket);
+}
+
+int User::getNum()
+{
+	return (this->num);
 }
 
 void	HandleMessage(User user, int num, std::vector<pollfd> client_fds)
@@ -40,6 +45,7 @@ void	HandleMessage(User user, int num, std::vector<pollfd> client_fds)
 		if (bytesRead > 0)
 		{
 			std::string message(buffer, bytesRead);
+			std::cout << "command : " << message << std::endl;
 			ParseCommand(user, message);
 		}
 	    
@@ -64,42 +70,46 @@ void	ParseCommand(User user, std::string message)
 void	FindCommand(User user, std::string command)
 {
 	size_t pos1 = command.find(' ');
-	size_t pos2 = command.find(' ', pos1 + 1);
+	//size_t pos2 = command.find(' ', pos1 + 1);
 	if (command.substr(0, pos1) == "CAP")
 	{
-		std::cout << "le cap est : " << command.substr(pos1 + 1, pos2 - pos1 - 1) << std::endl;
-		
+		CommandCAP(user);
 	}
 	if (command.substr(0, pos1) == "PASS")
-	std::cout << "le mot de passe est : " << command.substr(pos1 + 1, pos2 - pos1 - 1) << std::endl;
+	{
+		CommandPASS(user);
+	}
 	if (command.substr(0, pos1) == "NICK")
-	std::cout << "le nom est : " << command.substr(pos1 + 1, pos2 - pos1 - 1) << std::endl;
+	{
+		CommandNICK(user);
+	}
 	if (command.substr(0, pos1) == "USER")
-	std::cout << "l'utilisateur est : " << command.substr(pos1 + 1, pos2 - pos1 - 1) << std::endl;
-	(void)user;
+	{
+		CommandUSER(user);
+	}
 }
 
 void	CommandCAP(User user)
 {
 	std::string capabilities = "sasl";
 	std::string response = "CAP * LS :" + capabilities + "\r\n";
-	send(this->SClient.fd, response.c_str(), response.size(), 0);
+	send(user.getNum(), response.c_str(), response.size(), 0);
 }
 
 void	CommandPASS(User user)
 {
 	std::string response2 = ":localhost 001 mlangloi :Welcome to the IRC server\r\n";
-	send(this->SClient.fd, response2.c_str(), response2.size(), 0);
+	send(user.getNum(), response2.c_str(), response2.size(), 0);
 }
 
 void	CommandNICK(User user)
 {
 	std::string response3 = ":mlangloi!mlangloi@host mlangloi :mlangloi\r\n";
-		send(this->SClient.fd, response3.c_str(), response3.size(), 0);
+	send(user.getNum(), response3.c_str(), response3.size(), 0);
 }
 
 void	CommandUSER(User user)
 {
 	std::string response4 = ":localhost 001 mlangloi :Welcome to the IRC server\r\n";
-		send(this->SClient.fd, response4.c_str(), response4.size(), 0);
+	send(user.getNum(), response4.c_str(), response4.size(), 0);
 }

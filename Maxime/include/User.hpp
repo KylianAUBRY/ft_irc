@@ -19,15 +19,17 @@ class User
 {
 	public:
 		User();
-		User(int socket);
+		User(int socket, int num);
 		~User();
 		int getSocket();
+		int getNum();
 	
 		
 	
 	private:
 		std::string username;
 		int socket;
+		int num;
 		
 		
 
