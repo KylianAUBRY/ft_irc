@@ -50,13 +50,13 @@ int FindChannel(std::string search)
 	return (0);
 }
 
-void Channel::AddUser(User user)
+void Channel::AddUser(User *user)
 {
 	UserBook.push_back(user);
-	std::cout << "user : " << user.getUsername() << " ajoute au channel : " << this->getName() << std::endl;
+	std::cout << "user : " << user->getUsername() << " ajoute au channel : " << this->getName() << std::endl;
 }
 
-void JoinChannel(User user, std::string search)
+void JoinChannel(User *user, std::string search)
 {
 	std::map<std::string, Channel>::iterator it;
 	for (it = Channel::ChannelBook.begin(); it != Channel::ChannelBook.end(); ++it)
@@ -71,4 +71,5 @@ void JoinChannel(User user, std::string search)
 	std::cout << "channel introuvable, creation\n";
 	Channel newChannel(search);
 	newChannel.Channel::AddUser(user);
+	user->setChannel(search);
 }

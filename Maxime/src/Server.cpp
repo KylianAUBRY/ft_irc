@@ -63,17 +63,15 @@ int Server::InitializeServ()
 		else if ( num_ready == -1 && Stop == 1 )
 			std::cout << "\nServer: Poll error" << std::endl;
 		ConnectClient();
-		std::map<int, User>::iterator it;
+		std::map<int, User*>::iterator it;
 		for (it = UserTab.begin(); it != UserTab.end(); ++it)
 		{
 			int num = it->first;
-			User user = it->second;
+			User *user = it->second;
 			HandleMessage(user, num + 1, client_fds);
 		}
-
-
 	}
-		
+	//std::cout << UserTab[0].getUsername() << std::endl;
 	close(this->SServer.fd);
 	for (int i = 1; i <= this->numConnection + 2; i++)
 	{
@@ -84,7 +82,6 @@ int Server::InitializeServ()
 	}
 	}
 	std::cout << "close" << std::endl;
-	
 	return 0;
 }
 
@@ -108,7 +105,7 @@ void	Server::ConnectClient()
 			return ;
 		}
 		std::cout << "New client connected: " << this->SClient.fd << std::endl;
-		User user(this->SClient.fd, this->SClient.fd);
+		User *user = new User(this->SClient.fd, this->SClient.fd);
 		UserTab[this->numConnection] = user;
 		client_fds[this->numConnection + 1].fd = this->SClient.fd;
 		client_fds[this->numConnection + 1].events = POLLIN | POLLOUT;
@@ -120,4 +117,19 @@ void	Server::ConnectClient()
 			
 }
 
-
+void	SendMessage(std::string channel, std::string message)
+{
+	(void)message;
+	std::map<int, User*>::iterator it;
+	for (it = serv.UserTab.begin(); it != serv.UserTab.end(); ++it)
+	{
+		//int num = it->first;
+		User *user = it->second;
+		if (user->getChannel() == channel)
+		{
+			// envoyer message
+			std::string response3 = ":mlangloi!mlangloi@host mlangloi :mlangloi\r\n";
+			send(user->getNum(), response3.c_str(), response3.size(), 0);
+		}
+	}
+}

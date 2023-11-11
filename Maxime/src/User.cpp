@@ -16,7 +16,7 @@ User::User()
 {
 }
 
-User::User(int socket, int num) : username("user"), socket(socket), num(num)
+User::User(int socket, int num) : socket(socket), num(num)
 {
 	std::cout << "User cree : " << this->username << this->socket << std::endl;
 }
@@ -40,16 +40,26 @@ std::string User::getUsername()
 	return (this->username);
 }
 
+std::string User::getChannel()
+{
+	return (this->channel);
+}
+
 void User::setUsername(std::string name)
 {
 	this->username = name;
 }
 
-void	HandleMessage(User user, int num, std::vector<pollfd> client_fds)
+void User::setChannel(std::string newChannel)
+{
+	this->channel = newChannel;
+}
+
+void	HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 {
 	if (client_fds[num].revents & POLLIN)
 	{
-		std::cout << user.User::getUsername() << "\n";
+		std::cout << user->User::getUsername() << "\n";
 		char buffer[1024];
 		ssize_t bytesRead = recv(client_fds[num].fd, buffer, sizeof(buffer), 0);
 
@@ -64,7 +74,7 @@ void	HandleMessage(User user, int num, std::vector<pollfd> client_fds)
 	
 }
 
-void	ParseCommand(User user, std::string message)
+void	ParseCommand(User *user, std::string message)
 {
 	size_t end = message.find("\r\n", 0);
 	size_t pos = 0;
@@ -78,8 +88,10 @@ void	ParseCommand(User user, std::string message)
 	(void)user;
 }
 
-void	FindCommand(User user, std::string command)
+void	FindCommand(User *user, std::string command)
 {
+	size_t found = command.find("\r\n");
+	command.erase(found, 2);
 	size_t pos1 = command.find(' ');
 	size_t pos2 = command.find(' ', pos1 + 1);
 	if (command.substr(0, pos1) == "CAP")
@@ -108,43 +120,57 @@ void	FindCommand(User user, std::string command)
 	}
 }
 
-void	CommandCAP(User user)
+void	CommandCAP(User *user)
 {
 	std::string capabilities = "sasl";
 	std::string response = "CAP * LS :" + capabilities + "\r\n";
-	send(user.getNum(), response.c_str(), response.size(), 0);
+	send(user->getNum(), response.c_str(), response.size(), 0);
 }
 
-void	CommandPASS(User user)
+void	CommandPASS(User *user)
 {
 	std::string response2 = ":localhost 001 mlangloi :Welcome to the IRC server\r\n";
-	send(user.getNum(), response2.c_str(), response2.size(), 0);
+	send(user->getNum(), response2.c_str(), response2.size(), 0);
 }
 
-void	CommandNICK(User user, std::string message)
+void	CommandNICK(User *user, std::string message)
 {
-	user.User::setUsername(message);
+	user->User::setUsername(message);
+	//std::cout << "test : " << user.getUsername() << std::endl;
 	std::string response3 = ":mlangloi!mlangloi@host mlangloi :mlangloi\r\n";
-	send(user.getNum(), response3.c_str(), response3.size(), 0);
+	send(user->getNum(), response3.c_str(), response3.size(), 0);
 }
 
-void	CommandUSER(User user)
+void	CommandUSER(User *user)
 {
 	std::string response4 = ":localhost 001 mlangloi :Welcome to the IRC server\r\n";
-	send(user.getNum(), response4.c_str(), response4.size(), 0);
+	std::cout << "test : " << user->getUsername() << std::endl;
+	send(user->getNum(), response4.c_str(), response4.size(), 0);
 }
 
-void	CommandJOIN(User user, std::string message)
+void	CommandJOIN(User *user, std::string message)
 {
-	std::cout << "mess : " << message << std::endl;
+	std::cout << "mess : " <<  message << "." << std::endl;
+	std::cout << "test : " << user->getUsername() << std::endl;
 	JoinChannel(user, message);
-	
+
 	
 	//send(user.getNum(), response4.c_str(), response4.size(), 0);
 }
 
-void	CommandPRIVMSG(User user, std::string message)
+void	CommandPRIVMSG(User *user, std::string message)
 {
 	std::cout << "mess : " << message << std::endl;
+	SendMessage("#serv", "salut");
+	/*if (FindChannel(...) == 1)
+	{
+		
+		//envoyer message au user sur le serv
+	}
+	else if (FindUser(...) == 1)
+	{
+		//envoyer messaeg au user
+	}*/
+	
 	(void)user;
 }

@@ -51,14 +51,20 @@ class Server
 		static void	handle_signal(int signal);
 		void	ConnectClient();
 		void	Message();
+		std::map<int, User*> UserTab;
 	
 	private:
 		int numConnection;
 		std::vector<pollfd> * poll_fds;
 		s_socket SClient;
 		s_socket SServer;
-		std::map<int, User> UserTab;
+		
+		
 
 };
+
+void	SendMessage(std::string channel, std::string message);
+
+static Server serv;
 
 #endif
