@@ -12,7 +12,8 @@
 
 #include"Channel.hpp"
 
-std::map<std::string, Channel> Channel::ChannelBook;
+std::map<std::string, Channel*> Channel::ChannelBook;
+std::vector<User*> Channel::UserBook;
 
 Channel::Channel()
 {
@@ -20,7 +21,7 @@ Channel::Channel()
 
 Channel::Channel(std::string name) : name(name)
 {
-	this->ChannelBook[name] = *this;
+	this->ChannelBook[name] = this;
 	std::cout << "creation du channel : " << name << std::endl;
 }
 
@@ -33,43 +34,51 @@ std::string Channel::getName()
 	return (this->name);
 }
 
-int FindChannel(std::string search)
+std::string Channel::getStringUser()
 {
-	std::map<std::string, Channel>::iterator it;
+	std::string users;
+	std::vector<User*>::iterator it;
+	for (it = UserBook.begin(); it != UserBook.end(); ++it)
+	{
+		users = users + " " + (*it)->getUsername();
+	}
+	return (users);
+}
+
+Channel *FindChannel(std::string search)
+{
+	std::map<std::string, Channel*>::iterator it;
 	for (it = Channel::ChannelBook.begin(); it != Channel::ChannelBook.end(); ++it)
 	{
 		std::string name = it->first;
-		Channel channel = it->second;
+		Channel* channel = it->second;
 		if (search == name)
 		{
-			std::cout << "Nom du canal : " << name << std::endl;
-			return (1);
+			return (channel);
 		}
 	}
-	std::cout << "Canal introuvable " << std::endl;
-	return (0);
+	return (NULL);
 }
 
 void Channel::AddUser(User *user)
 {
 	UserBook.push_back(user);
-	std::cout << "user : " << user->getUsername() << " ajoute au channel : " << this->getName() << std::endl;
 }
 
 void JoinChannel(User *user, std::string search)
 {
-	std::map<std::string, Channel>::iterator it;
+	std::map<std::string, Channel*>::iterator it;
 	for (it = Channel::ChannelBook.begin(); it != Channel::ChannelBook.end(); ++it)
 	{
 		std::string name = it->first;
-		Channel channel = it->second;
+		Channel* channel = it->second;
 		if (search == name)
 		{
-			channel.Channel::AddUser(user);
+			channel->Channel::AddUser(user);
 		}
 	}
-	std::cout << "channel introuvable, creation\n";
-	Channel newChannel(search);
-	newChannel.Channel::AddUser(user);
+	Channel* newChannel = new Channel(search);
+	newChannel->Channel::AddUser(user);
 	user->setChannel(search);
+	std::cout << "nb : " << Channel::UserBook.size() << std::endl;
 }

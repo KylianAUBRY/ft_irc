@@ -25,19 +25,21 @@ class Channel
 		Channel(std::string name);
 		~Channel();
 		std::string getName();
-		static std::map<std::string, Channel> ChannelBook;
+		std::string getStringUser();
+		static std::map<std::string, Channel*> ChannelBook;
+		static std::vector<User*> UserBook;
 		void AddUser(User *user);
 		
 	
 	private:
 		std::string name;
-		std::vector<User*> UserBook;
+		
 		
 		
 
 };
 
-int FindChannel(std::string search);
+Channel *FindChannel(std::string search);
 void JoinChannel(User *user, std::string search);
 
 #endif

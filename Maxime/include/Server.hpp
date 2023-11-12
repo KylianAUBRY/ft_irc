@@ -65,6 +65,4 @@ class Server
 
 void	SendMessage(std::string channel, std::string message);
 
-static Server serv;
-
 #endif

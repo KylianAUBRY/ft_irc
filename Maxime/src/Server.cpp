@@ -57,7 +57,7 @@ int Server::InitializeServ()
 	while (Stop == 0)
 	{
 		std::vector<pollfd> &client_fds = *poll_fds;
-		int num_ready = poll( client_fds.data(), this->numConnection + 1, -1 );
+		int num_ready = poll( client_fds.data(), this->numConnection + 1, 1 );
 		if ( num_ready == -1 && Stop == 1 )
 			std::cout << "\nServer: intercepted signal" << std::endl;
 		else if ( num_ready == -1 && Stop == 1 )
@@ -71,15 +71,13 @@ int Server::InitializeServ()
 			HandleMessage(user, num + 1, client_fds);
 		}
 	}
-	//std::cout << UserTab[0].getUsername() << std::endl;
 	close(this->SServer.fd);
 	for (int i = 1; i <= this->numConnection + 2; i++)
 	{
-	
-	if (client_fds[i].revents)
-	{
-		close(client_fds[i].fd);
-	}
+		if (client_fds[i].revents)
+		{
+			close(client_fds[i].fd);
+		}
 	}
 	std::cout << "close" << std::endl;
 	return 0;
@@ -120,7 +118,8 @@ void	Server::ConnectClient()
 void	SendMessage(std::string channel, std::string message)
 {
 	(void)message;
-	std::map<int, User*>::iterator it;
+	(void)channel;
+	/*std::map<int, User*>::iterator it;
 	for (it = serv.UserTab.begin(); it != serv.UserTab.end(); ++it)
 	{
 		//int num = it->first;
@@ -131,5 +130,5 @@ void	SendMessage(std::string channel, std::string message)
 			std::string response3 = ":mlangloi!mlangloi@host mlangloi :mlangloi\r\n";
 			send(user->getNum(), response3.c_str(), response3.size(), 0);
 		}
-	}
+	}*/
 }

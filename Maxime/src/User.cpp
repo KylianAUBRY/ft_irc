@@ -59,14 +59,13 @@ void	HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 {
 	if (client_fds[num].revents & POLLIN)
 	{
-		std::cout << user->User::getUsername() << "\n";
 		char buffer[1024];
 		ssize_t bytesRead = recv(client_fds[num].fd, buffer, sizeof(buffer), 0);
 
 		if (bytesRead > 0)
 		{
 			std::string message(buffer, bytesRead);
-			std::cout << "command : " << message << std::endl;
+			std::cout << user->User::getUsername() << " command : " << message << std::endl;
 			ParseCommand(user, message);
 		}
 	    
@@ -118,6 +117,11 @@ void	FindCommand(User *user, std::string command)
 	{
 		CommandPRIVMSG(user, command.substr(pos1, pos2));
 	}
+	/*if (command.substr(0, pos1) == "NAMES")
+	{
+		std::cout << "tesde fout\n";
+		CommandNAMES(user);
+	}*/
 }
 
 void	CommandCAP(User *user)
@@ -135,6 +139,14 @@ void	CommandPASS(User *user)
 
 void	CommandNICK(User *user, std::string message)
 {
+	static std::vector<std::string> usernames;
+	std::vector<std::string>::iterator it;
+	for (it = usernames.begin(); it != usernames.end(); ++it)
+	{
+		if (message == *it)
+			message = message + "1";
+		// pas bon : trouver sol pour plusieur fois le meme username
+	}
 	user->User::setUsername(message);
 	//std::cout << "test : " << user.getUsername() << std::endl;
 	std::string response3 = ":mlangloi!mlangloi@host mlangloi :mlangloi\r\n";
@@ -150,12 +162,17 @@ void	CommandUSER(User *user)
 
 void	CommandJOIN(User *user, std::string message)
 {
-	std::cout << "mess : " <<  message << "." << std::endl;
-	std::cout << "test : " << user->getUsername() << std::endl;
-	JoinChannel(user, message);
-
 	
-	//send(user.getNum(), response4.c_str(), response4.size(), 0);
+
+
+
+
+
+	JoinChannel(user, message);
+	CommandNAMES(user);
+	//std::string response4 = ":server 474 " + user->getUsername() +  message + " :Cannot join channel +b \r\n";
+
+	//send(user->getNum(), response4.c_str(), response4.size(), 0);
 }
 
 void	CommandPRIVMSG(User *user, std::string message)
@@ -174,3 +191,13 @@ void	CommandPRIVMSG(User *user, std::string message)
 	
 	(void)user;
 }
+
+void	CommandNAMES(User *user)
+{
+	std::string response4 = ":server 353 " + user->getUsername() + " = " + user->getChannel() + " :" +  user->getUsername() + FindChannel(user->getChannel())->getStringUser() + "\r\n";
+	send(user->getNum(), response4.c_str(), response4.size(), 0);
+	response4 = ":server 366 " + user->getUsername() + " " + user->getChannel() + " :End of /NAMES list.\r\n";
+	send(user->getNum(), response4.c_str(), response4.size(), 0);
+	
+}
+

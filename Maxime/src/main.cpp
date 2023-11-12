@@ -32,8 +32,7 @@ int main(int ac, char **av)
 	(void)av;
 	int err;
 	Server Serveur;
-	serv = Serveur;
-	err = serv.InitializeServ();
+	err = Serveur.InitializeServ();
 	return 0;
 	
 }
