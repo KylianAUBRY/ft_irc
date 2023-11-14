@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mlangloi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/09 19:10:09 by mlangloi          #+#    #+#             */
-/*   Updated: 2023/11/14 15:56:02 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/09 19:10:10 by mlangloi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,9 @@ class Channel
 	private:
 		std::string name;
 		
+		
+		
+
 };
 
 Channel *FindChannel(std::string search);

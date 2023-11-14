@@ -41,15 +41,6 @@ class User
 
 };
 
-void	HandleMessage(User *user, int num, std::vector<pollfd> client_fds);
-void	ParseCommand(User *user, std::string message);
-void	FindCommand(User *user, std::string command);
-void	CommandCAP(User *user);
-void	CommandPASS(User *user);
-void	CommandNICK(User *user, std::string message);
-void	CommandUSER(User *user);
-void	CommandJOIN(User *user, std::string message);
-void	CommandPRIVMSG(User *user, std::string message);
-void	CommandNAMES(User *user);
+
 
 #endif

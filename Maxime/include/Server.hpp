@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mlangloi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:21:44 by mlangloi          #+#    #+#             */
-/*   Updated: 2023/11/14 14:59:58 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/10/25 17:21:45 by mlangloi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,20 @@ class Server
 		void	ConnectClient();
 		void	Message();
 		std::map<int, User*> UserTab;
+		void	SendMessage(std::string channel, std::string message);
+		
+		
+		
+		void	HandleMessage(User *user, int num, std::vector<pollfd> client_fds);
+		void	ParseCommand(User *user, std::string message);
+		void	FindCommand(User *user, std::string command);
+		void	CommandCAP(User *user);
+		void	CommandPASS(User *user);
+		void	CommandNICK(User *user, std::string message);
+		void	CommandUSER(User *user);
+		void	CommandJOIN(User *user, std::string message);
+		void	CommandPRIVMSG(User *user, std::string message);
+		void	CommandNAMES(User *user);
 	
 	private:
 		int numConnection;
@@ -63,6 +77,5 @@ class Server
 
 };
 
-void	SendMessage(std::string channel, std::string message);
 
 #endif
