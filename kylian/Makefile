@@ -1,7 +1,9 @@
 NAME	=	ircserv
 
-SRCS	=	main.cpp \
-			Server.cpp \
+SRCS	=	src/main.cpp \
+			src/Server.cpp \
+			src/User.cpp \
+			src/Channel.cpp \
 		
 OBJ =	${SRCS:.cpp=.o}
 

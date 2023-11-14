@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mlangloi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/27 17:54:33 by mlangloi          #+#    #+#             */
-/*   Updated: 2023/10/27 17:54:33 by mlangloi         ###   ########.fr       */
+/*   Updated: 2023/11/14 16:46:56 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,16 +61,15 @@ void	HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 	{
 		char buffer[1024];
 		ssize_t bytesRead = recv(client_fds[num].fd, buffer, sizeof(buffer), 0);
-
 		if (bytesRead > 0)
 		{
 			std::string message(buffer, bytesRead);
 			std::cout << user->User::getUsername() << " command : " << message << std::endl;
 			ParseCommand(user, message);
+			
+			
 		}
-	    
 	}
-	
 }
 
 void	ParseCommand(User *user, std::string message)

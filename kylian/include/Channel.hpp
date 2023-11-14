@@ -5,38 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/09 19:10:09 by mlangloi          #+#    #+#             */
-/*   Updated: 2023/11/14 15:56:02 by kyaubry          ###   ########.fr       */
+/*   Created: 2023/11/14 15:01:31 by kyaubry           #+#    #+#             */
+/*   Updated: 2023/11/14 15:03:44 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CHANNEL_HPP
-#define CHANNEL_HPP
+#pragma once
 
-#include"../include/Server.hpp"
-#include"../include/User.hpp"
+# include "include.hpp"
 
-class User;
-
-class Channel
-{
-	public:
-		Channel();
-		Channel(std::string name);
-		~Channel();
-		std::string getName();
-		std::string getStringUser();
-		static std::map<std::string, Channel*> ChannelBook;
-		static std::vector<User*> UserBook;
-		void AddUser(User *user);
-		
-	
-	private:
-		std::string name;
-		
-};
-
-Channel *FindChannel(std::string search);
-void JoinChannel(User *user, std::string search);
-
-#endif

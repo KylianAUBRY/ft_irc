@@ -1,24 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/08 13:59:17 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/08 14:43:10 by kyaubry          ###   ########.fr       */
+/*   Created: 2023/11/14 15:42:01 by kyaubry           #+#    #+#             */
+/*   Updated: 2023/11/14 16:45:04 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include "../include/User.hpp"
 
-int main(int argc, char **argv)
+User::User(int socket) : _socket(socket)
 {
-	if (argc != 3)
-	{
-		std::cout << "./ircserv <port> <password>" << '\n';
-		return 1;
-	}
-	Server serv(argv[1], argv[2]);
-	
+	_username = "";
 }
+
+User::~User()
+{
+	close(this->_socket);
+}
+
+std::string User::getUsername(void)
+{
+	return (_username);
+}
+
+void User::setUsername(std::string username)
+{
+	this->_username = username;
+}
+

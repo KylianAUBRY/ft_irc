@@ -6,13 +6,15 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 14:31:57 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/09 17:21:40 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/14 16:48:25 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 # include "include.hpp"
+# include "Channel.hpp"
+# include "User.hpp"
 
 struct s_socket
 {
@@ -33,8 +35,14 @@ class Server
 		s_socket SClient;
 		s_socket SServer;
 
-		pollfd *client_fds;
+		std::vector<pollfd> * poll_fds;
+		int numConnection;
+
+		std::map<int, User*> UserTab;
+		//map chanel
 		
+		void	HandleMessage(User *user, int num, std::vector<pollfd> client_fds);
+		void	FindCommand(User *user, std::string command);
 		void	ConnectClient();
 		bool Server_start();
 		bool Server_loop();
