@@ -3,56 +3,48 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mlangloi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/27 17:54:33 by mlangloi          #+#    #+#             */
-/*   Updated: 2023/10/27 17:54:33 by mlangloi         ###   ########.fr       */
+/*   Created: 2023/11/14 15:42:01 by kyaubry           #+#    #+#             */
+/*   Updated: 2023/11/14 16:45:04 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include"User.hpp"
+#include "../include/User.hpp"
 
-User::User()
+User::User(int socket) : _socket(socket)
 {
-}
-
-User::User(int socket, int num) : socket(socket), num(num)
-{
-	std::cout << "User cree : " << this->username << this->socket << std::endl;
+	_username = "";
+	_channel = "";
 }
 
 User::~User()
 {
+	close(this->_socket);
 }
 
-int User::getSocket()
+std::string User::getUsername(void)
 {
-	return (this->socket);
+	return (_username);
 }
 
-int User::getNum()
+std::string User::getChannel(void)
 {
-	return (this->num);
+	return (_channel);
 }
 
-std::string User::getUsername()
+int User::getSocket(void)
 {
-	return (this->username);
+	return (_socket);
 }
 
-std::string User::getChannel()
+void User::setUsername(std::string username)
 {
-	return (this->channel);
+	this->_username = username;
 }
 
-void User::setUsername(std::string name)
+void User::setChannel(std::string channel)
 {
-	this->username = name;
+	this->_channel = channel;
 }
-
-void User::setChannel(std::string newChannel)
-{
-	this->channel = newChannel;
-}
-
 

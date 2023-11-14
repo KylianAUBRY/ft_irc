@@ -1,63 +1,30 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: mlangloi <marvin@42.fr>                    +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/10/24 19:26:57 by mlangloi          #+#    #+#              #
-#    Updated: 2023/10/24 19:26:58 by mlangloi         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+NAME	=	ircserv
 
-NAME =			ircserv
+SRCS	=	src/main.cpp \
+			src/Server.cpp \
+			src/User.cpp \
+			src/Channel.cpp \
+		
+OBJ =	${SRCS:.cpp=.o}
 
-CC = 			c++
-CFLAGS = 		-Wall -Werror -Wextra -std=c++98 -g
-LIBRARIES =
-CFLAG = 		-c
-OFLAG =			-o
-IFLAG =			-I
+CC =	c++
 
-MAKE = 			make -s -C
-MAKE_CLEAN = 	make clean -s -C
-MAKE_FCLEAN = 	make fclean -s -C
+CFLAGS	=	-Wall -Wextra -Werror -g -std=c++98
 
-MKDIR =			mkdir -p
-CP =			cp
-RM =			rm -rf
+.c.o:
+			$(CC) $(CFLAGS) -cpp $< -o $(<:.cpp=.o)
 
-SOURCES_DIR =	./src
-OBJECTS_DIR =	./objs
-HEADERS_DIR =	./include
+$(NAME): ${OBJ}
+		$(CC) $(CFLAGS) -o $(NAME) ${OBJ}
 
-FILES =		main.cpp \
-			Server.cpp \
-			User.cpp \
-			Channel.cpp
-
-SRCS =			$(foreach FILE, $(FILES), $(shell find $(SOURCES_DIR) -name $(FILE)))
-
-OBJS =			$(patsubst $(SOURCES_DIR)/%, $(OBJECTS_DIR)/%, $(SRCS:.cpp=.o))
-
-$(OBJECTS_DIR)/%.o: $(SOURCES_DIR)/%.cpp
-	@$(MKDIR) $(@D)
-	@$(CC) $(CFLAGS) $(IFLAG) $(HEADERS_DIR) $(CFLAG) $(OFLAG) $@ $<
-
-all: $(NAME)
-
-$(NAME): $(OBJS)
-	@$(CC) $(CFLAGS) $(OBJS) $(LIBRARIES) $(OFLAG) $(NAME)
+all:	${NAME}
 
 clean:
-	@$(RM) $(OBJECTS_DIR)
+		rm -f ${OBJ}
 
-fclean: clean
-	@$(RM) $(NAME)
+fclean:	clean
+		rm -f ${NAME}
 
-run: re
-	./$(NAME) 3000 password
-
-re: fclean all clean
+re:	fclean all
 
 .PHONY: all clean fclean re

@@ -3,38 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mlangloi <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/25 17:21:44 by mlangloi          #+#    #+#             */
-/*   Updated: 2023/10/25 17:21:45 by mlangloi         ###   ########.fr       */
+/*   Created: 2023/11/08 14:31:57 by kyaubry           #+#    #+#             */
+/*   Updated: 2023/11/14 16:48:25 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_HPP
-#define SERVER_HPP
+#pragma once
 
-#include<arpa/inet.h>
-#include<netdb.h>
-#include<unistd.h>
-#include<netinet/in.h>
-#include<sys/socket.h>
-#include<sys/types.h>
-#include<stdlib.h>
-#include<stdio.h>
-#include<string>
-#include<iostream>
-#include<stack>
-#include<vector>
-#include <map>
-#include <csignal>
-#include <poll.h>
-#include <iterator>
-#include"../include/User.hpp"
-#include"../include/Channel.hpp"
-
-class User;
-
-static bool Stop = 0;
+# include "include.hpp"
+# include "Channel.hpp"
+# include "User.hpp"
 
 struct s_socket
 {
@@ -44,38 +24,33 @@ struct s_socket
 
 class Server
 {
-	public:
-		Server();
+	public :
+		Server(std::string const &port, std::string const &password);
 		~Server();
-		int	InitializeServ();
-		static void	handle_signal(int signal);
-		void	ConnectClient();
-		void	Message();
+		
+	private :
+		Server();
+		int _port;
+		const std::string _password;
+		s_socket SClient;
+		s_socket SServer;
+
+		std::vector<pollfd> * poll_fds;
+		int numConnection;
+
 		std::map<int, User*> UserTab;
-		void	SendMessage(std::string channel, std::string message);
-		
-		
+		std::map<std::string, Channel*> ChannelTab;
 		
 		void	HandleMessage(User *user, int num, std::vector<pollfd> client_fds);
-		void	ParseCommand(User *user, std::string message);
 		void	FindCommand(User *user, std::string command);
+		void	ConnectClient();
+		bool Server_start();
+		bool Server_loop();
 		void	CommandCAP(User *user);
 		void	CommandPASS(User *user);
 		void	CommandNICK(User *user, std::string message);
-		void	CommandUSER(User *user);
 		void	CommandJOIN(User *user, std::string message);
-		void	CommandPRIVMSG(User *user, std::string message);
+		void	CommandUSER(User *user);
 		void	CommandNAMES(User *user);
-	
-	private:
-		int numConnection;
-		std::vector<pollfd> * poll_fds;
-		s_socket SClient;
-		s_socket SServer;
-		
-		
-
+		Channel	*FindChannel(std::string search);
 };
-
-
-#endif
