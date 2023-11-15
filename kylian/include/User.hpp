@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 15:41:54 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/14 16:45:12 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/15 12:11:19 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,19 @@ class User
 		User(int socket);
 		~User();
 		std::string getUsername(void);
+		std::string getNickname(void);
+		std::string getChannel(void);
+		std::string getHostname(void);
+		int getSocket(void);
+		std::string getID(void);
 		void setUsername(std::string username);
+		void setNickname(std::string nickname);
+		void setChannel(std::string channel);
+		void setHostname(std::string hostname);
 	private :
 		const int _socket;
 		std::string _username;
+		std::string _nickname;
+		std::string _channel;
+		std::string _hostname;
 };

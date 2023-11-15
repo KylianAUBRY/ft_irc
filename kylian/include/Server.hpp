@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 14:31:57 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/14 16:48:25 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/15 14:06:05 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,22 @@ class Server
 		int numConnection;
 
 		std::map<int, User*> UserTab;
-		//map chanel
+		std::map<std::string, Channel*> ChannelTab;
 		
 		void	HandleMessage(User *user, int num, std::vector<pollfd> client_fds);
 		void	FindCommand(User *user, std::string command);
 		void	ConnectClient();
-		bool Server_start();
-		bool Server_loop();
+		bool 	Server_start();
+		bool	Server_loop();
+
+		void	CommandCAP(User *user);
+		void	CommandPASS(User *user);
+		void	CommandNICK(User *user, std::string message);
+		void	CommandJOIN(User *user, std::string message);
+		void	CommandUSER(User *user, std::string message);
+		void	CommandNAMES(User *user);
+		void	CommandPRIVMSG(User *user, std::string message);
+		void	CommandPART(User *user, std::string message);
+		void	SendMessage(User *user, Channel *channel, std::string mes);
+		Channel	*FindChannel(std::string search);
 };

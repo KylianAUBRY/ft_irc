@@ -4,7 +4,8 @@ SRCS	=	src/main.cpp \
 			src/Server.cpp \
 			src/User.cpp \
 			src/Channel.cpp \
-		
+			src/CmdServer.cpp \
+
 OBJ =	${SRCS:.cpp=.o}
 
 CC =	c++

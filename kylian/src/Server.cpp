@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 14:40:59 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/14 16:50:04 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/15 18:42:05 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,7 @@ bool Server::Server_loop()
 				HandleMessage(user, num + 1, client_fds);
 			}
 	}
+	
 }
 
 void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
@@ -138,33 +139,32 @@ void	Server::FindCommand(User *user, std::string command)
 	size_t pos2 = command.find(' ', pos1 + 1);
 	if (command.substr(0, pos1) == "CAP")
 	{
-		//CommandCAP(user);
+		CommandCAP(user);
 	}
 	if (command.substr(0, pos1) == "PASS")
 	{
-		//CommandPASS(user);
+		CommandPASS(user);
 	}
 	if (command.substr(0, pos1) == "NICK")
 	{
-		//CommandNICK(user, command.substr(pos1 + 1, pos2));
+		CommandNICK(user, command.substr(pos1 + 1, pos2));
 	}
 	if (command.substr(0, pos1) == "USER")
 	{
-		//CommandUSER(user);
+		CommandUSER(user, command.substr(pos1 + 1));
 	}
 	if (command.substr(0, pos1) == "JOIN")
 	{
-		//CommandJOIN(user, command.substr(pos1 + 1, pos2));
+		CommandJOIN(user, command.substr(pos1 + 1, pos2));
 	}
 	if (command.substr(0, pos1) == "PRIVMSG")
 	{
-		//CommandPRIVMSG(user, command.substr(pos1, pos2));
+		CommandPRIVMSG(user, command.substr(pos1 + 1));
 	}
-	/*if (command.substr(0, pos1) == "NAMES")
+	if (command.substr(0, pos1) == "PART")
 	{
-		std::cout << "tesde fout\n";
-		CommandNAMES(user);
-	}*/
+		CommandPART(user, command.substr(pos1 + 1, pos2));
+	}
 }
 
 Server::Server(std::string const &port, std::string const &password) : _password(password)
@@ -194,3 +194,4 @@ Server::Server(std::string const &port, std::string const &password) : _password
 }
 
 Server::~Server() {}
+
