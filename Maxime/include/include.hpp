@@ -14,6 +14,7 @@
 
 # include <iostream>
 # include <sstream>
+# include <algorithm>
 # include <string>
 # include <poll.h>
 # include <stack>

@@ -22,6 +22,7 @@ class Channel
 		std::string getName(void);
 		void AddUser(std::string user);
 		std::string getStringUser();
+		void DelUser(std::string user);
 	private :
 		const std::string _name;
 		std::vector<std::string> UserBook;

@@ -36,7 +36,15 @@ std::string Channel::getStringUser()
 	std::vector<std::string>::iterator it;
 	for (it = UserBook.begin(); it != UserBook.end(); ++it)
 	{
-		users = users + " " + *it;
+		std::cout << *it << std::endl;
+		users += *it + " ";
 	}
+	if (!users.empty())
+		users.pop_back();
 	return (users);
+}
+
+void Channel::DelUser(std::string user)
+{
+	UserBook.erase(std::remove(UserBook.begin(), UserBook.end(), user),UserBook.end());
 }
