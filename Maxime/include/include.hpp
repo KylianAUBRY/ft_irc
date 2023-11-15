@@ -13,6 +13,7 @@
 #pragma once
 
 # include <iostream>
+# include <sstream>
 # include <string>
 # include <poll.h>
 # include <stack>

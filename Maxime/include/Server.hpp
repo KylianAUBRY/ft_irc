@@ -50,7 +50,9 @@ class Server
 		void	CommandPASS(User *user);
 		void	CommandNICK(User *user, std::string message);
 		void	CommandJOIN(User *user, std::string message);
-		void	CommandUSER(User *user);
+		void	CommandUSER(User *user, std::string message);
 		void	CommandNAMES(User *user);
+		void	CommandPRIVMSG(User *user, std::string message);
+		void	SendMessage(User *user, Channel *channel, std::string mes);
 		Channel	*FindChannel(std::string search);
 };
