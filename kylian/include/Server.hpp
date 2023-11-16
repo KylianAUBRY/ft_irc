@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 14:31:57 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/15 14:06:05 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/16 14:45:52 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ class Server
 		void	CommandNICK(User *user, std::string message);
 		void	CommandJOIN(User *user, std::string message);
 		void	CommandUSER(User *user, std::string message);
-		void	CommandNAMES(User *user);
+		void	CommandNAMES(User *user, Channel *channel);
 		void	CommandPRIVMSG(User *user, std::string message);
 		void	CommandPART(User *user, std::string message);
 		void	SendMessage(User *user, Channel *channel, std::string mes);

@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 15:03:01 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/15 19:35:37 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/16 14:43:05 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,6 @@ void Channel::SendMsg(User *user, std::string message)
 	{
 		if ((*it)->getSocket() != user->getSocket())
 			send((*it)->getSocket(), message.c_str(), message.size(), 0);
-		
 	}
 }
 

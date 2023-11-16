@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 12:09:23 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/15 19:59:29 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/16 14:53:04 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,16 +31,17 @@ void	Server::CommandNICK(User *user, std::string message)
 	bool usernameExists = false;
 	do {
 	    usernameExists = false;
-	    for (it = UserTab.begin(); it != UserTab.end(); ++it) {
-		User* userT = it->second;
-		if (message == userT->getNickname()) {
-		    usernameExists = true;
-		    break;
-		}
+	    for (it = UserTab.begin(); it != UserTab.end(); ++it) 
+		{
+			User* userT = it->second;
+			if (message == userT->getNickname())
+			{
+			    usernameExists = true;
+			    break;
+			}
 	    }
-	    if (usernameExists) {
-		message = message + "_";
-	    }
+	    if (usernameExists)
+			message = message + "_";
 	} while (usernameExists);
 	user->User::setNickname(message);
 	/*std::string response3 = ":mlangloi!mlangloi@host mlangloi :mlangloi\r\n";
@@ -69,9 +70,9 @@ void	Server::CommandJOIN(User *user, std::string message)
 		{
 			channel->Channel::AddUser(user);
 			user->setChannel(message);
-			std::string response4 = ":" + user->getID() + " JOIN " + channel->getName() + "\r\n";	
+			std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";	
 			send(user->getSocket(), response4.c_str(), response4.size(), 0);
-			CommandNAMES(user);
+			CommandNAMES(user, channel);
 			return;
 		}
 	}
@@ -79,19 +80,19 @@ void	Server::CommandJOIN(User *user, std::string message)
 	newChannel->Channel::AddUser(user);
 	user->setChannel(message);
 	ChannelTab[message] = newChannel;
-	std::string response4 = ":" + user->getID() + " JOIN " + newChannel->getName() + "\r\n";
+	std::string response4 = user->getID() + " JOIN " + newChannel->getName() + "\r\n";
 	send(user->getSocket(), response4.c_str(), response4.size(), 0);
-	CommandNAMES(user);
+	CommandNAMES(user, newChannel);
 }
 
-void	Server::CommandNAMES(User *user)
+void	Server::CommandNAMES(User *user, Channel *channel)
 {
-	std::cout << "list : " << FindChannel(user->getChannel())->getStringUser() << std::endl;
-	std::string response4 = ":server 353 " + user->getUsername() + " = " + user->getChannel() + " :" +  user->getUsername() + FindChannel(user->getChannel())->getStringUser() + "\r\n";
-	send(user->getSocket(), response4.c_str(), response4.size(), 0);
-	response4 = ":server 366 " + user->getUsername() + " " + user->getChannel() + " :End of /NAMES list.\r\n";
-	send(user->getSocket(), response4.c_str(), response4.size(), 0);
+	//std::cout << "list : " << FindChannel(user->getChannel())->getStringUser() << std::endl;
+	std::string response = ":server 353 " + user->getUsername() + " = " + user->getChannel() + " :" +  user->getUsername() + FindChannel(user->getChannel())->getStringUser() + "\r\n";
+	send(user->getSocket(), response.c_str(), response.size(), 0);
 	
+	std::string response1 = ":server 366 " + user->getUsername() + " " + user->getChannel() + " :End of /NAMES list.\r\n";
+	send(user->getSocket(), response1.c_str(), response1.size(), 0);
 }
 
 void	Server::CommandPRIVMSG(User *user, std::string message)
