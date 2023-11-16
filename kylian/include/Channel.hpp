@@ -23,7 +23,7 @@ class Channel
 		std::string getName(void);
 		void AddUser(User *user, std::string mdp);
 		void DelUser(User *user);
-		std::string getStringUser();
+		std::string getStringUser(std::string name);
 		void SendMsg(User *user, std::string message);
 		bool IsHere(User *user);
 		void SetPassword(std::string password);

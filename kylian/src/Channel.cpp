@@ -55,13 +55,14 @@ void  Channel::DelUser(User *user)
 	}
 }
 
-std::string Channel::getStringUser()
+std::string Channel::getStringUser(std::string name)
 {
 	std::string users;
 	std::vector<User *>::iterator it;
 	for (it = UserBook.begin(); it != UserBook.end(); ++it)
 	{
-		users += " " + (*it)->getNickname();
+		if ((*it)->getNickname() != _name)
+			users += " " + (*it)->getNickname();
 	}
 	return (users);
 }

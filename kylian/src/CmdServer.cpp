@@ -27,25 +27,55 @@ void	Server::CommandPASS(User *user)
 
 void	Server::CommandNICK(User *user, std::string message)
 {
-	std::map<int, User*>::iterator it;
-	bool usernameExists = false;
-	do {
-	    usernameExists = false;
-	    for (it = UserTab.begin(); it != UserTab.end(); ++it) 
+	if (user->getGetNick() == false)
+	{
+		std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaa" << std::endl;
+		std::map<int, User*>::iterator it;
+		bool usernameExists = false;
+		do {
+			usernameExists = false;
+			for (it = UserTab.begin(); it != UserTab.end(); ++it) 
+			{
+				User* userT = it->second;
+				if (message == userT->getNickname())
+				{
+				usernameExists = true;
+				break;
+			}
+			}
+			if (usernameExists)
+				message = message + "_";
+		} while (usernameExists);
+		user->User::setNickname(message);
+		user->setGetNick();
+	}
+	else
+	{
+		std::cout << "nnnnnnnnnnnnnnnnn" << std::endl;
+		std::map<int, User*>::iterator it;
+		bool usernameExists = false;
+		for (it = UserTab.begin(); it != UserTab.end(); ++it) 
 		{
 			User* userT = it->second;
 			if (message == userT->getNickname())
 			{
-			    usernameExists = true;
-			    break;
+				usernameExists = true;
+				std::string response3 = ":server 433 " + user->getNickname() + " " + message + " :Nickname is already in use\r\n";
+				std::cout << "test " << response3 << std::endl;
+				send(user->getSocket(), response3.c_str(), response3.size(), 0);
+				break;
+	
+				
 			}
-	    }
-	    if (usernameExists)
-			message = message + "_";
-	} while (usernameExists);
-	user->User::setNickname(message);
-	/*std::string response3 = ":mlangloi!mlangloi@host mlangloi :mlangloi\r\n";
-	send(user->getSocket(), response3.c_str(), response3.size(), 0);*/
+		}
+		if (usernameExists == false)
+		{
+			std::string response3 = user->getID() + " NICK " + message + "\r\n";
+			user->User::setNickname(message);
+			std::cout << "test " << response3 << std::endl;
+			send(user->getSocket(), response3.c_str(), response3.size(), 0);
+		}
+	}
 }
 
 void	Server::CommandUSER(User *user, std::string message)
@@ -81,7 +111,6 @@ void Server::CommandJOIN2(User *user, std::string nameChannel, std::string mdp)
 	newChannel->Channel::AddUser(user, "");
 	user->setChannel(nameChannel);
 	ChannelTab[nameChannel] = newChannel;
-
 	std::string response4 = user->getID() + " JOIN " + newChannel->getName() + "\r\n";
 	send(user->getSocket(), response4.c_str(), response4.size(), 0);
 	CommandNAMES(user, newChannel);
@@ -197,11 +226,9 @@ void	Server::CommandJOIN(User *user, std::string message)
 
 void	Server::CommandNAMES(User *user, Channel *channel)
 {
-	//std::cout << "list : " << FindChannel(user->getChannel())->getStringUser() << std::endl;
-	std::string response = ":server 353 " + user->getNickname() + " = " + user->getChannel() + " :" +  user->getNickname() + FindChannel(user->getChannel())->getStringUser() + "\r\n";
+	std::string response = ":server 353 " + user->getNickname() + " = " + user->getChannel() + " :" +  user->getNickname() + FindChannel(user->getChannel())->getStringUser(user->getNickname()) + "\r\n";
 	send(user->getSocket(), response.c_str(), response.size(), 0);
-	
-	std::string response1 = ":server 366 " + user->getNickname() + " " + user->getChannel() + " :End of NAMES list.\r\n";
+	std::string response1 = ":server 366 " + user->getNickname() + " " + user->getChannel() + " :End of NAMES list\r\n";
 	send(user->getSocket(), response1.c_str(), response1.size(), 0);
 }
 
@@ -236,11 +263,13 @@ void	Server::CommandPART(User *user, std::string message)
 			channel->DelUser(user);
 			std::string response4 = user->getID() + " PART " + channel->getName() + " :" + user->getNickname() + "\r\n";
 			send(user->getSocket(), response4.c_str(), response4.size(), 0);
+			channel->SendMsg(user, response4);
 			user->setChannel("");
 			return;
 		}
 	}
 }
+
 
 Channel	*Server::FindChannel(std::string search)
 {
