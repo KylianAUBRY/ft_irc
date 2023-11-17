@@ -26,64 +26,71 @@ std::string Channel::getName(void)
 	return (_name);
 }
 
-void Channel::AddUser(User *user, std::string mdp)
+void Channel::AddUser(User *user, std::string mdp, int super)
 {
 	if (IsHere(user) == true)
 		return ;
-	this->UserBook.push_back(user);
 	if (this->_password != "" && mdp != this->_password)
 	{
 		std::string response = user->getID() + " :Password incorrect" + "\r\n";
 		send(user->getSocket(), response.c_str(), response.size(), 0);
 		return ;
 	}
-	/*std::string response = user->getID() + " JOIN " + this->getName() + "\r\n";
-	send(user->getSocket(), response.c_str(), response.size(), 0);
-	std::string response2 = ":server 353 " + user->getUsername() + " = " + user->getChannel() + " :" +  user->getUsername() + this->getStringUser() + "\r\n";
-	send(user->getSocket(), response2.c_str(), response2.size(), 0);
-	std::string response3 = ":server 366 " + user->getUsername() + " " + user->getChannel() + " :End of /NAMES list.\r\n";
-	send(user->getSocket(), response3.c_str(), response3.size(), 0);*/
+	this->UserBook[user] = super;
+	std::cout << "test " << user->getNickname() << super << "\n";
 }
 
 void  Channel::DelUser(User *user)
 {
-	UserBook.erase(std::remove(UserBook.begin(), UserBook.end(), user),UserBook.end());
-	std::vector<User *>::iterator it;
-	for (it = UserBook.begin(); it != UserBook.end(); ++it)
+	std::map<User*, int>::iterator it = UserBook.find(user);
+	if (it != UserBook.end())
 	{
-		std::cout << (*it)->getNickname() << '\n';
+		UserBook.erase(it);
 	}
 }
 
 std::string Channel::getStringUser(std::string name)
 {
 	std::string users;
-	std::vector<User *>::iterator it;
+	std::map<User*, int>::iterator it;
 	for (it = UserBook.begin(); it != UserBook.end(); ++it)
 	{
-		if ((*it)->getNickname() != _name)
-			users += " " + (*it)->getNickname();
+		if (it->first->getNickname() != name)
+		{
+			if (it->second == 0)
+				users += " " + it->first->getNickname();
+			else if (it->second == 1)
+				users += " @" + it->first->getNickname();
+		}
+		else if (it->first->getNickname() == name)
+		{
+			if (it->second == 0)
+				users = it->first->getNickname() + users;
+			else if (it->second == 1)
+				users = "@" + it->first->getNickname() + users;
+		}
 	}
-	return (users);
+	return users;
 }
 
 void Channel::SendMsg(User *user, std::string message)
 {
-	std::vector<User *>::iterator it;
+	std::map<User*, int>::iterator it;
 	for (it = UserBook.begin(); it != UserBook.end(); ++it)
 	{
-		if ((*it)->getSocket() != user->getSocket())
-			send((*it)->getSocket(), message.c_str(), message.size(), 0);
+		if (it->first->getSocket() != user->getSocket())
+			send(it->first->getSocket(), message.c_str(), message.size(), 0);
 	}
 }
 
+
 bool Channel::IsHere(User *user)
 {
-	std::vector<User *>::iterator it;
+	std::map<User*, int>::iterator it;
 	for (it = UserBook.begin(); it != UserBook.end(); ++it)
 	{
-		if ((*it)->getSocket() == user->getSocket())
-			return true ;
+		if (it->first->getSocket() == user->getSocket())
+			return true;
 	}
 	return false;
 }
@@ -96,4 +103,11 @@ void Channel::SetPassword(std::string password)
 std::string Channel::getPassword(void)
 {
 	return _password;
+}
+
+bool Channel::isEmpty()
+{
+	if (UserBook.empty())
+		return true;
+	return false;
 }

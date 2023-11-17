@@ -48,11 +48,11 @@ class Server
 		bool	Server_loop();
 
 		void	CommandCAP(User *user);
-		void	CommandPASS(User *user);
+		int	CommandPASS(User *user, std::string pass);
 		void	CommandNICK(User *user, std::string message);
 		void	CommandJOIN(User *user, std::string message);
 		void 	CommandJOIN2(User *user, std::string nameChannel, std::string mdp);
-		void	CommandUSER(User *user, std::string message);
+		void	CommandUSER(User *user, std::string message, int passOK);
 		void	CommandNAMES(User *user, Channel *channel);
 		void	CommandPRIVMSG(User *user, std::string message);
 		void	CommandPART(User *user, std::string message);

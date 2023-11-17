@@ -133,6 +133,7 @@ void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 
 void	Server::FindCommand(User *user, std::string command)
 {
+	static int passOK = 1;
 	size_t found = command.find("\r\n");
 	command.erase(found, 2);
 	size_t pos1 = command.find(' ');
@@ -143,7 +144,7 @@ void	Server::FindCommand(User *user, std::string command)
 	}
 	if (command.substr(0, pos1) == "PASS")
 	{
-		CommandPASS(user);
+		passOK = CommandPASS(user, command.substr(pos1 + 1));
 	}
 	if (command.substr(0, pos1) == "NICK")
 	{
@@ -151,7 +152,7 @@ void	Server::FindCommand(User *user, std::string command)
 	}
 	if (command.substr(0, pos1) == "USER")
 	{
-		CommandUSER(user, command.substr(pos1 + 1));
+		CommandUSER(user, command.substr(pos1 + 1), passOK);
 	}
 	if (command.substr(0, pos1) == "JOIN")
 	{

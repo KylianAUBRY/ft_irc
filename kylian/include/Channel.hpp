@@ -21,15 +21,16 @@ class Channel
 		Channel(std::string name);
 		~Channel();
 		std::string getName(void);
-		void AddUser(User *user, std::string mdp);
+		void AddUser(User *user, std::string mdp, int super);
 		void DelUser(User *user);
 		std::string getStringUser(std::string name);
 		void SendMsg(User *user, std::string message);
 		bool IsHere(User *user);
 		void SetPassword(std::string password);
 		std::string getPassword(void);
+		bool isEmpty();
 	private :
 		std::string _password;
 		const std::string _name;
-		std::vector<User*> UserBook;
+		std::map<User*, int> UserBook;
 };

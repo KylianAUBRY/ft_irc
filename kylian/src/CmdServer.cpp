@@ -19,10 +19,20 @@ void	Server::CommandCAP(User *user)
 	send(user->getSocket(), response.c_str(), response.size(), 0);
 }
 
-void	Server::CommandPASS(User *user)
+int	Server::CommandPASS(User *user, std::string pass)
 {
-	/*std::string response2 = ":localhost 001 "+ user->getUsername() +" :Welcome to the IRC server\r\n";
-	send(user->getSocket(), response2.c_str(), response2.size(), 0);*/
+	if (pass != this->_password)
+	{
+		std::string response2 = ":server 464 " + user->getNickname() + " :Password incorrect\r\n";
+		send(user->getSocket(), response2.c_str(), response2.size(), 0);
+		return (1);
+	}	
+	else
+	{
+		std::string response2 = ":localhost 001 "+ user->getNickname() +" :Password Correct\r\n";
+		send(user->getSocket(), response2.c_str(), response2.size(), 0);
+		return (0);
+	}
 }
 
 void	Server::CommandNICK(User *user, std::string message)
@@ -76,15 +86,23 @@ void	Server::CommandNICK(User *user, std::string message)
 	}
 }
 
-void	Server::CommandUSER(User *user, std::string message)
+void	Server::CommandUSER(User *user, std::string message, int passOK)
 {
-	std::istringstream iss(message);
-	std::string username, unused, hostname;
-	iss >> username >> unused >> hostname;
-	user->setUsername(username);
-	user->setHostname(hostname);
-	std::string response4 = ":localhost 001 " + user->getNickname() +" :Welcome to the IRC server\r\n";
-	send(user->getSocket(), response4.c_str(), response4.size(), 0);
+	if (passOK == 0)
+	{
+		std::istringstream iss(message);
+		std::string username, unused, hostname;
+		iss >> username >> unused >> hostname;
+		user->setUsername(username);
+		user->setHostname(hostname);
+		std::string response4 = ":localhost 001 " + user->getNickname() +" :Welcome to the IRC server\r\n";
+		send(user->getSocket(), response4.c_str(), response4.size(), 0);
+	}
+	else if (passOK == 1)
+	{
+		std::string response4 = ":server 462 " + user->getNickname() + " :You may not reregister\r\n";
+		send(user->getSocket(), response4.c_str(), response4.size(), 0);
+	}
 }
 
 void Server::CommandJOIN2(User *user, std::string nameChannel, std::string mdp)
@@ -96,17 +114,17 @@ void Server::CommandJOIN2(User *user, std::string nameChannel, std::string mdp)
 		Channel* channel = it->second;
 		if (nameChannel == name)
 		{
-			channel->Channel::AddUser(user, mdp);
+			channel->Channel::AddUser(user, mdp, 0);
 			user->setChannel(nameChannel);
 			std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";	
 			send(user->getSocket(), response4.c_str(), response4.size(), 0);
 			channel->SendMsg(user, response4);
 			CommandNAMES(user, channel);
-			return ;
+			return;
 		}
 	}
 	Channel* newChannel = new Channel(nameChannel);
-	newChannel->Channel::AddUser(user, "");
+	newChannel->Channel::AddUser(user, "", 1);
 	user->setChannel(nameChannel);
 	ChannelTab[nameChannel] = newChannel;
 	std::string response4 = user->getID() + " JOIN " + newChannel->getName() + "\r\n";
@@ -167,7 +185,7 @@ void	Server::CommandJOIN(User *user, std::string message)
 
 void	Server::CommandNAMES(User *user, Channel *channel)
 {
-	std::string response = ":server 353 " + user->getNickname() + " = " + user->getChannel() + " :" +  user->getNickname() + FindChannel(user->getChannel())->getStringUser(user->getNickname()) + "\r\n";
+	std::string response = ":server 353 " + user->getNickname() + " = " + user->getChannel() + " :" +  FindChannel(user->getChannel())->getStringUser(user->getNickname()) + "\r\n";
 	send(user->getSocket(), response.c_str(), response.size(), 0);
 	std::string response1 = ":server 366 " + user->getNickname() + " " + user->getChannel() + " :End of NAMES list\r\n";
 	send(user->getSocket(), response1.c_str(), response1.size(), 0);
@@ -202,6 +220,11 @@ void	Server::CommandPART(User *user, std::string message)
 		if (message == name)
 		{
 			channel->DelUser(user);
+			if (channel->isEmpty() == true)
+			{
+				delete channel;
+				ChannelTab.erase(it);
+			}
 			std::string response4 = user->getID() + " PART " + channel->getName() + " :" + user->getNickname() + "\r\n";
 			send(user->getSocket(), response4.c_str(), response4.size(), 0);
 			channel->SendMsg(user, response4);
