@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 14:31:57 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/14 16:48:25 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/17 15:23:16 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,16 +44,24 @@ class Server
 		void	HandleMessage(User *user, int num, std::vector<pollfd> client_fds);
 		void	FindCommand(User *user, std::string command);
 		void	ConnectClient();
-		bool Server_start();
-		bool Server_loop();
+		bool 	Server_start();
+		bool	Server_loop();
+
 		void	CommandCAP(User *user);
-		void	CommandPASS(User *user);
+		int	CommandPASS(User *user, std::string pass);
 		void	CommandNICK(User *user, std::string message);
 		void	CommandJOIN(User *user, std::string message);
-		void	CommandUSER(User *user, std::string message);
-		void	CommandNAMES(User *user);
+		void 	CommandJOIN2(User *user, std::string nameChannel, std::string mdp);
+		void	CommandUSER(User *user, std::string message, int passOK);
+		void	CommandNAMES(User *user, Channel *channel);
 		void	CommandPRIVMSG(User *user, std::string message);
 		void	CommandPART(User *user, std::string message);
+		void	CommandMODE(User *user, std::string message);
+		void	CommandMODE2(User *user, char channel, int status, std::string supmode, std::string nameChannel);
+
+		void 	ModeK(User *user, Channel *channel, std::string message, int i);
+		void 	ModeI(User *user, Channel *channel, int i);
+
 		void	SendMessage(User *user, Channel *channel, std::string mes);
 		Channel	*FindChannel(std::string search);
 };

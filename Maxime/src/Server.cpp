@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 14:40:59 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/14 16:50:04 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/17 15:24:00 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,7 @@ bool Server::Server_loop()
 				HandleMessage(user, num + 1, client_fds);
 			}
 	}
+	
 }
 
 void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
@@ -115,7 +116,7 @@ void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 		if (bytesRead > 0)
 		{
 			std::string message(buffer, bytesRead);
-			std::cout << user->getNickname() << " command : " << message << std::endl;
+			std::cout << user->getUsername() << " command : " << message << std::endl;
 			
 			size_t end = message.find("\r\n", 0);
 			size_t pos = 0;
@@ -132,6 +133,7 @@ void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 
 void	Server::FindCommand(User *user, std::string command)
 {
+	static int passOK = 1;
 	size_t found = command.find("\r\n");
 	command.erase(found, 2);
 	size_t pos1 = command.find(' ');
@@ -142,7 +144,7 @@ void	Server::FindCommand(User *user, std::string command)
 	}
 	if (command.substr(0, pos1) == "PASS")
 	{
-		CommandPASS(user);
+		passOK = CommandPASS(user, command.substr(pos1 + 1));
 	}
 	if (command.substr(0, pos1) == "NICK")
 	{
@@ -150,173 +152,24 @@ void	Server::FindCommand(User *user, std::string command)
 	}
 	if (command.substr(0, pos1) == "USER")
 	{
-		CommandUSER(user, command.substr(pos1 + 1));
+		CommandUSER(user, command.substr(pos1 + 1), passOK);
 	}
 	if (command.substr(0, pos1) == "JOIN")
 	{
-		CommandJOIN(user, command.substr(pos1 + 1, pos2));
+		CommandJOIN(user, command.substr(pos1 + 1));
 	}
 	if (command.substr(0, pos1) == "PRIVMSG")
 	{
-		CommandPRIVMSG(user, command.substr(pos1 + 1, pos2));
+		CommandPRIVMSG(user, command.substr(pos1 + 1));
 	}
 	if (command.substr(0, pos1) == "PART")
 	{
 		CommandPART(user, command.substr(pos1 + 1, pos2));
 	}
-}
-
-void	Server::CommandCAP(User *user)
-{
-	std::string capabilities = "sasl";
-	std::string response = "CAP * LS :" + capabilities + "\r\n";
-	send(user->getSocket(), response.c_str(), response.size(), 0);
-}
-
-void	Server::CommandPASS(User *user)
-{
-	/*std::string response2 = ":localhost 001 "+ user->getNickname() +" :Welcome to the IRC server\r\n";
-	send(user->getSocket(), response2.c_str(), response2.size(), 0);*/
-}
-
-void	Server::CommandNICK(User *user, std::string message)
-{
-	std::map<int, User*>::iterator it;
-	bool usernameExists = false;
-	do {
-	    usernameExists = false;
-	    for (it = UserTab.begin(); it != UserTab.end(); ++it) {
-		User* userT = it->second;
-		if (message == userT->getNickname()) {
-		    usernameExists = true;
-		    break;
-		}
-	    }
-	    if (usernameExists) {
-		message = message + "_";
-	    }
-	} while (usernameExists);
-	user->User::setNickname(message);
-	/*std::string response3 = ":mlangloi!mlangloi@host mlangloi :mlangloi\r\n";
-	send(user->getSocket(), response3.c_str(), response3.size(), 0);*/
-}
-
-void	Server::CommandUSER(User *user, std::string message)
-{
-	std::istringstream iss(message);
-	std::string username, unused, hostname;
-	iss >> username >> unused >> hostname;
-	user->setUsername(username);
-	user->setHostname(hostname);
-	std::string response4 = ":localhost 001 " + user->getNickname() +" :Welcome to the IRC server\r\n";
-	send(user->getSocket(), response4.c_str(), response4.size(), 0);
-}
-
-void	Server::CommandJOIN(User *user, std::string message)
-{
-	std::map<std::string, Channel*>::iterator it;
-	for (it = ChannelTab.begin(); it != ChannelTab.end(); ++it)
+	if (command.substr(0, pos1) == "MODE")
 	{
-		std::string name = it->first;
-		Channel* channel = it->second;
-		if (message == name)
-		{
-			channel->Channel::AddUser(user->getNickname());
-			user->setChannel(message);
-			std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";
-			send(user->getSocket(), response4.c_str(), response4.size(), 0);
-			response4 = ":server 353 " + user->getNickname() + " = " + channel->getName() + " :" + FindChannel(user->getChannel())->getStringUser() + "\r\n";
-			send(user->getSocket(), response4.c_str(), response4.size(), 0);
-			response4 = ":server 366 " + user->getNickname() + " " + channel->getName() + ":End of /NAMES list.\r\n";
-			send(user->getSocket(), response4.c_str(), response4.size(), 0);
-			CommandNAMES(user);
-			return;
-		}
+		CommandMODE(user, command.substr(pos1 + 1));
 	}
-	Channel* newChannel = new Channel(message);
-	newChannel->Channel::AddUser(user->getNickname());
-	user->setChannel(message);
-	ChannelTab[message] = newChannel;
-	std::string response4 = user->getID() + " JOIN " + newChannel->getName() + "\r\n";
-	send(user->getSocket(), response4.c_str(), response4.size(), 0);
-	response4 = ":server 353 " + user->getNickname() + " = " + newChannel->getName() + " :" + FindChannel(user->getChannel())->getStringUser() + "\r\n";
-	send(user->getSocket(), response4.c_str(), response4.size(), 0);
-	response4 = ":server 366 " + user->getNickname() + " " + newChannel->getName(); + ":End of /NAMES list.\r\n";
-	send(user->getSocket(), response4.c_str(), response4.size(), 0);
-	CommandNAMES(user);
-}
-
-void	Server::CommandNAMES(User *user)
-{
-	std::cout << "list : " << FindChannel(user->getChannel())->getStringUser() << std::endl;
-	std::string response4 = ":server 353 " + user->getNickname() + " = " + user->getChannel() + " :" +  user->getNickname() + FindChannel(user->getChannel())->getStringUser() + "\r\n";
-	send(user->getSocket(), response4.c_str(), response4.size(), 0);
-	response4 = ":server 366 " + user->getNickname() + " " + user->getChannel() + " :End of /NAMES list.\r\n";
-	send(user->getSocket(), response4.c_str(), response4.size(), 0);
-	
-}
-
-void	Server::CommandPRIVMSG(User *user, std::string message)
-{
-	size_t Pos = message.find(':');
-        std::string mes = message.substr(Pos + 1);
-        message = message.substr(0, Pos - 1);
-	std::map<std::string, Channel*>::iterator it;
-	for (it = ChannelTab.begin(); it != ChannelTab.end(); ++it)
-	{
-		std::string name = it->first;
-		std::cout << message << " " << name << std::endl;
-		Channel* channel = it->second;
-		if (message == name)
-		{
-			SendMessage(user, channel, mes);
-			return;
-		}
-	}
-}
-
-void	Server::CommandPART(User *user, std::string message)
-{
-	std::map<std::string, Channel*>::iterator it;
-	for (it = ChannelTab.begin(); it != ChannelTab.end(); ++it)
-	{
-		std::string name = it->first;
-		Channel* channel = it->second;
-		if (message == name)
-		{
-			channel->DelUser(user->getNickname());
-			std::string response4 = user->getID() + " PART " + channel->getName() + "\r\n";
-			send(user->getSocket(), response4.c_str(), response4.size(), 0);
-			response4 = ":server 353 " + user->getNickname() + " = " + channel->getName() + " :" + FindChannel(user->getChannel())->getStringUser() + "\r\n";
-			send(user->getSocket(), response4.c_str(), response4.size(), 0);
-			response4 = ":server 366 " + user->getNickname() + " " + channel->getName(); + ":End of /NAMES list.\r\n";
-			send(user->getSocket(), response4.c_str(), response4.size(), 0);
-			user->setChannel("");
-			return;
-		}
-	}
-}
-
-void	Server::SendMessage(User *user, Channel *channel, std::string mes)
-{
-	std::string response4 = ":" + user->getNickname() + " PRIVMSG " + channel->getName() + " :" + mes + "\r\n";
-	std::cout << response4 << std::endl;
-	send(user->getSocket(), response4.c_str(), response4.size(), 0);
-}
-
-Channel	*Server::FindChannel(std::string search)
-{
-	std::map<std::string, Channel*>::iterator it;
-	for (it = ChannelTab.begin(); it != ChannelTab.end(); ++it)
-	{
-		std::string name = it->first;
-		Channel* channel = it->second;
-		if (search == name)
-		{
-			return(channel);
-		}
-	}
-	return(NULL);
 }
 
 Server::Server(std::string const &port, std::string const &password) : _password(password)
@@ -346,3 +199,4 @@ Server::Server(std::string const &port, std::string const &password) : _password
 }
 
 Server::~Server() {}
+

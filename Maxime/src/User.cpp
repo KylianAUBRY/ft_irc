@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 15:42:01 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/14 16:45:04 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/15 12:11:43 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ User::User(int socket) : _socket(socket)
 	_channel = "";
 	_nickname = "";
 	_hostname = "";
+	_getNick = false;
 }
 
 User::~User()
@@ -50,6 +51,11 @@ int User::getSocket(void)
 	return (_socket);
 }
 
+bool User::getGetNick(void)
+{
+	return (_getNick);
+}
+
 std::string User::getID(void)
 {
 	std::string ID = ":" + this->_nickname + "!" + this->_username + "@" + this->_hostname;
@@ -76,3 +82,7 @@ void User::setChannel(std::string channel)
 	this->_channel = channel;
 }
 
+void User::setGetNick()
+{
+	this->_getNick = true;
+}
