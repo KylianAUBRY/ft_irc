@@ -31,9 +31,12 @@ class Channel
 		bool getMode(char mode);
 		std::string getPassword(void);
 		bool isEmpty();
+		int isOp(std::string nickname);
+		void changeOp(std::string nickname, int op);
 	private :
 		std::string _password;
 		const std::string _name;
 		std::map<User*, int> UserBook;
 		bool _modeK;
+		bool _modeT;
 };

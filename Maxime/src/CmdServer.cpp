@@ -271,6 +271,12 @@ void	Server::CommandMODE2(User *user, char cha, int status, std::string supmode,
 				case 'k':
 					ModeK(user, channel, supmode, status);
 					break ;
+				case 'o':
+					ModeO(user,channel, supmode, status);
+					break;
+				case 't':
+					ModeT(user, channel, status);
+					break;
 			}
 		}
 	}
@@ -368,3 +374,31 @@ void	Server::SendMessage(User *user, Channel *channel, std::string mes)
 	}*/
 }
 
+void	Server::CommandTOPIC(User *user, std::string message)
+{
+	std::string chanel;
+	size_t end = message.find(' ');
+	if (end == std::string::npos)
+		return ;
+	chanel = message.substr(0, end);
+	std::map<std::string, Channel*>::iterator it;
+	for (it = ChannelTab.begin(); it != ChannelTab.end(); ++it)
+	{
+		std::string name = it->first;
+		Channel* channel = it->second;
+		if (chanel == name)
+		{
+			if (channel->getMode('t') == false)
+			{
+				std::string response = user->getID() + " TOPIC " + channel->getName() + " :" + message.substr(end) + "\r\n";
+				send(user->getSocket(), response.c_str(), response.size(), 0);
+				channel->SendMsg(user ,response);
+			}
+			else
+			{
+				std::string response = ":server 482 " + user->getNickname() + " " + channel->getName() + " :You do not have access to change the topic on this channel" + "\r\n";
+				send(user->getSocket(), response.c_str(), response.size(), 0);
+			}
+		}
+	}
+}

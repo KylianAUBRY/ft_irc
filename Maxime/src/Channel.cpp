@@ -16,6 +16,7 @@ Channel::Channel(std::string name) : _name(name)
 {
 	this->_password = "";
 	this->_modeK = false;
+	this->_modeT = true;
 }
 
 Channel::~Channel()
@@ -118,7 +119,7 @@ void Channel::SetMode(char mode, bool x)
             // Traitement pour le mode 'i'
             break;
         case 't':
-            // Traitement pour le mode 't'
+            this->_modeT = x;
             break;
         case 'o':
             // Traitement pour le mode 'o'
@@ -143,7 +144,7 @@ bool Channel::getMode(char mode)
             // Traitement pour le mode 'i'
             break;
         case 't':
-            // Traitement pour le mode 't'
+            return (this->_modeT);
             break;
         case 'o':
             // Traitement pour le mode 'o'
@@ -155,4 +156,29 @@ bool Channel::getMode(char mode)
             // Code à exécuter par défaut si le mode n'est pas l'un des cas précédents
             break;
     }
+    	return false;
+}
+
+int Channel::isOp(std::string nickname)
+{
+	std::map<User*, int>::iterator it;
+	for (it = UserBook.begin(); it != UserBook.end(); ++it)
+	{
+		if (it->first->getNickname() == nickname)
+		{
+			return (it->second);
+		}
+	}
+}
+
+void Channel::changeOp(std::string nickname, int op)
+{
+	std::map<User*, int>::iterator it;
+	for (it = UserBook.begin(); it != UserBook.end(); ++it)
+	{
+		if (it->first->getNickname() == nickname)
+		{
+			it->second = op;
+		}
+	}
 }

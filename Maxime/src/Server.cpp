@@ -170,6 +170,10 @@ void	Server::FindCommand(User *user, std::string command)
 	{
 		CommandMODE(user, command.substr(pos1 + 1));
 	}
+	if (command.substr(0, pos1) == "TOPIC")
+	{
+		CommandTOPIC(user, command.substr(pos1 + 1));
+	}
 }
 
 Server::Server(std::string const &port, std::string const &password) : _password(password)
