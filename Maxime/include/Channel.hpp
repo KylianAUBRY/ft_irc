@@ -33,10 +33,17 @@ class Channel
 		bool isEmpty();
 		int isOp(std::string nickname);
 		void changeOp(std::string nickname, int op);
+		void SetUserLimit(int limit);
+		int getNbUser();
+		bool isPlace();
 	private :
 		std::string _password;
 		const std::string _name;
 		std::map<User*, int> UserBook;
+		std::vector<User*> UserInvite;
+		int _userLimit;
 		bool _modeK;
 		bool _modeT;
+		bool _modeL;
+		bool _modeI;
 };

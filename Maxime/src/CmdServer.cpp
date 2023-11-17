@@ -114,21 +114,11 @@ void Server::CommandJOIN2(User *user, std::string nameChannel, std::string mdp)
 		Channel* channel = it->second;
 		if (nameChannel == name)
 		{
-			if (channel->getMode('k') == false)
+			if (channel->getMode('k') == true && channel->getMode('l') == true)
 			{
-				channel->Channel::AddUser(user, mdp, 0);
-				user->setChannel(nameChannel);
-				std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";	
-				send(user->getSocket(), response4.c_str(), response4.size(), 0);
-				channel->SendMsg(user, response4);
-				CommandNAMES(user, channel);
-				return;
-			}
-			else
-			{
-				std::cout << mdp << channel->getPassword() << std::endl;
-				if (mdp == channel->getPassword())
+				if (mdp == channel->getPassword() && channel->isPlace() == true)
 				{
+					std::cout << "test1\n";
 					channel->Channel::AddUser(user, mdp, 0);
 					user->setChannel(nameChannel);
 					std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";	
@@ -137,12 +127,80 @@ void Server::CommandJOIN2(User *user, std::string nameChannel, std::string mdp)
 					CommandNAMES(user, channel);
 					return;
 				}
-				else
+				else if (mdp == channel->getPassword() && channel->isPlace() == false)
 				{
+					std::cout << "test2\n";
+					std::string response = ":server 471 " + user->getNickname() + " " + channel->getName() + " :Cannot join channel (+l)\r\n";
+					send(user->getSocket(), response.c_str(), response.size(), 0);
+					return;
+				}
+				else if (mdp != channel->getPassword() && channel->isPlace() == true)
+				{
+					std::cout << "test3\n";
 					std::string response = ":server 475 " + user->getNickname() + " " + channel->getName() + " :Cannot join channel (+k)\r\n";
 					send(user->getSocket(), response.c_str(), response.size(), 0);
 					return;
 				}
+				else if (mdp != channel->getPassword() && channel->isPlace() == false)
+				{
+					std::cout << "test4\n";
+					std::string response = ":server 471 " + user->getNickname() + " " + channel->getName() + " :Cannot join channel (+l)\r\n";
+					send(user->getSocket(), response.c_str(), response.size(), 0);
+					return;
+				}	
+			}
+			else if (channel->getMode('k') == true && channel->getMode('l') == false)
+			{
+				if (mdp == channel->getPassword())
+				{
+					std::cout << "test5\n";
+					channel->Channel::AddUser(user, mdp, 0);
+					user->setChannel(nameChannel);
+					std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";	
+					send(user->getSocket(), response4.c_str(), response4.size(), 0);
+					channel->SendMsg(user, response4);
+					CommandNAMES(user, channel);
+					return;
+				}
+				else if (mdp != channel->getPassword())
+				{
+					std::cout << "test6\n";
+					std::string response = ":server 475 " + user->getNickname() + " " + channel->getName() + " :Cannot join channel (+k)\r\n";
+					send(user->getSocket(), response.c_str(), response.size(), 0);
+					return;
+				}
+			}
+			else if (channel->getMode('k') == false && channel->getMode('l') == true)
+			{
+				if (channel->isPlace() == true)
+				{
+					std::cout << "test7\n";
+					channel->Channel::AddUser(user, mdp, 0);
+					user->setChannel(nameChannel);
+					std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";	
+					send(user->getSocket(), response4.c_str(), response4.size(), 0);
+					channel->SendMsg(user, response4);
+					CommandNAMES(user, channel);
+					return;
+				}
+				else if (channel->isPlace() == false)
+				{
+					std::cout << "test8\n";
+					std::string response = ":server 471 " + user->getNickname() + " " + channel->getName() + " :Cannot join channel (+l)\r\n";
+					send(user->getSocket(), response.c_str(), response.size(), 0);
+					return;
+				}
+			}
+			else if ((channel->getMode('k') == false && channel->getMode('l') == false))
+			{
+				std::cout << "test9\n";
+				channel->Channel::AddUser(user, mdp, 0);
+				user->setChannel(nameChannel);
+				std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";	
+				send(user->getSocket(), response4.c_str(), response4.size(), 0);
+				channel->SendMsg(user, response4);
+				CommandNAMES(user, channel);
+				return;
 			}
 		}
 	}
@@ -276,6 +334,12 @@ void	Server::CommandMODE2(User *user, char cha, int status, std::string supmode,
 					break;
 				case 't':
 					ModeT(user, channel, status);
+					break;
+				case 'l':
+					ModeL(user,channel, supmode, status);
+					break;
+				case 'i':
+					ModeI(user, channel, status);
 					break;
 			}
 		}

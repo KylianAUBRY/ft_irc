@@ -46,7 +46,26 @@ void 	Server::ModeK(User *user, Channel *channel, std::string message, int i)
 
 void 	Server::ModeI(User *user, Channel *channel, int i)
 {
-	
+	if (channel->isOp(user->getNickname()) == 0)
+	{
+		std::string response = ":server 482 " + user->getNickname() + " " + channel->getName() + " :You're not channel operator\r\n";
+		send(user->getSocket(), response.c_str(), response.size(), 0);
+	}
+	else if (channel->getMode('i') == false && i == 0)
+	{
+		channel->SetMode('i', true);
+		std::string response = user->getID() + " MODE " + channel->getName() + " +i " + "\r\n";
+		send(user->getSocket(), response.c_str(), response.size(), 0);
+		channel->SendMsg(user ,response);
+		
+	}
+	else if (channel->getMode('i') == true && i == 1)
+	{
+		channel->SetMode('i', false);
+		std::string response = user->getID() + " MODE " + channel->getName() + " -i " + "\r\n";
+		send(user->getSocket(), response.c_str(), response.size(), 0);
+		channel->SendMsg(user ,response);
+	}
 }
 
 void 	Server::ModeO(User *user, Channel *channel, std::string message, int i)
@@ -86,10 +105,46 @@ void 	Server::ModeT(User *user, Channel *channel, int i)
 		send(user->getSocket(), response.c_str(), response.size(), 0);
 		channel->SendMsg(user ,response);
 		
-	}else if (channel->getMode('t') == true && i == 1)
+	}
+	else if (channel->getMode('t') == true && i == 1)
 	{
 		channel->SetMode('t', false);
 		std::string response = user->getID() + " MODE " + channel->getName() + " -t " + "\r\n";
+		send(user->getSocket(), response.c_str(), response.size(), 0);
+		channel->SendMsg(user ,response);
+	}
+}
+
+void 	Server::ModeL(User *user, Channel *channel, std::string message, int i)
+{
+	if (channel->isOp(user->getNickname()) == 0)
+	{
+		std::string response = ":server 482 " + user->getNickname() + " " + channel->getName() + " :You're not channel operator\r\n";
+		send(user->getSocket(), response.c_str(), response.size(), 0);
+	}
+	else if (channel->getMode('l') == false && i == 0)
+	{
+		int nb = stoi(message);
+		channel->SetMode('l', true);
+		channel->SetUserLimit(nb);
+		std::string response = user->getID() + " MODE " + channel->getName() + " +l " + message + "\r\n";
+		send(user->getSocket(), response.c_str(), response.size(), 0);
+		channel->SendMsg(user ,response);
+		
+	}
+	else if (channel->getMode('l') == true && i == 0)
+	{
+		int nb = stoi(message);
+		channel->SetUserLimit(nb);
+		std::string response = user->getID() + " MODE " + channel->getName() + " +l " + message + "\r\n";
+		send(user->getSocket(), response.c_str(), response.size(), 0);
+		channel->SendMsg(user ,response);
+	}
+	else if (channel->getMode('l') == true && i == 1)
+	{
+		channel->SetMode('l', false);
+		channel->SetUserLimit(0);
+		std::string response = user->getID() + " MODE " + channel->getName() + " -l\r\n";
 		send(user->getSocket(), response.c_str(), response.size(), 0);
 		channel->SendMsg(user ,response);
 	}

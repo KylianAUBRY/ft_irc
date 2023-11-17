@@ -17,6 +17,8 @@ Channel::Channel(std::string name) : _name(name)
 	this->_password = "";
 	this->_modeK = false;
 	this->_modeT = true;
+	this->_modeL = false;
+	this->_modeI = false;
 }
 
 Channel::~Channel()
@@ -116,19 +118,15 @@ void Channel::SetMode(char mode, bool x)
             this->_modeK = x;
             break;
         case 'i':
-            // Traitement pour le mode 'i'
+            this->_modeI = x;
             break;
         case 't':
             this->_modeT = x;
             break;
-        case 'o':
-            // Traitement pour le mode 'o'
-            break;
         case 'l':
-            // Traitement pour le mode 'l'
+            this->_modeL = x;
             break;
         default:
-            // Code à exécuter par défaut si le mode n'est pas l'un des cas précédents
             break;
     }
 }
@@ -141,19 +139,15 @@ bool Channel::getMode(char mode)
         case 'k':
            return (this->_modeK);
         case 'i':
-            // Traitement pour le mode 'i'
+           return (this->_modeI);
             break;
         case 't':
             return (this->_modeT);
             break;
-        case 'o':
-            // Traitement pour le mode 'o'
-            break;
         case 'l':
-            // Traitement pour le mode 'l'
+            return (this->_modeL);
             break;
         default:
-            // Code à exécuter par défaut si le mode n'est pas l'un des cas précédents
             break;
     }
     	return false;
@@ -181,4 +175,27 @@ void Channel::changeOp(std::string nickname, int op)
 			it->second = op;
 		}
 	}
+}
+
+void Channel::SetUserLimit(int limit)
+{
+	this->_userLimit = limit;
+}
+
+int Channel::getNbUser()
+{
+	int i = 0;
+	std::map<User*, int>::iterator it;
+	for (it = UserBook.begin(); it != UserBook.end(); ++it)
+	{
+		i++;
+	}
+	return (i);
+}
+
+bool Channel::isPlace()
+{
+	if (this->getNbUser() < this->_userLimit)
+		return true;
+	return false; 
 }

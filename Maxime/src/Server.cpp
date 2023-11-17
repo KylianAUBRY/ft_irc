@@ -174,6 +174,10 @@ void	Server::FindCommand(User *user, std::string command)
 	{
 		CommandTOPIC(user, command.substr(pos1 + 1));
 	}
+	if (command.substr(0, pos1) == "INVITE")
+	{
+		CommandINVITE(user, command.substr(pos1 + 1));
+	}
 }
 
 Server::Server(std::string const &port, std::string const &password) : _password(password)
