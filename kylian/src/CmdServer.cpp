@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 12:09:23 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/16 19:07:12 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/17 15:26:58 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ void	Server::CommandNICK(User *user, std::string message)
 {
 	if (user->getGetNick() == false)
 	{
-		std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaa" << std::endl;
 		std::map<int, User*>::iterator it;
 		bool usernameExists = false;
 		do {
@@ -51,7 +50,6 @@ void	Server::CommandNICK(User *user, std::string message)
 	}
 	else
 	{
-		std::cout << "nnnnnnnnnnnnnnnnn" << std::endl;
 		std::map<int, User*>::iterator it;
 		bool usernameExists = false;
 		for (it = UserTab.begin(); it != UserTab.end(); ++it) 
@@ -144,16 +142,14 @@ void	Server::CommandJOIN(User *user, std::string message)
 		std::string j;
 		pos2 = chanel.find(',', pos1);
 		pos4 = mdp.find(',', pos3);
-		if (pos2 == std::string::npos){
+		if (pos2 == std::string::npos)
 			i = chanel.substr(pos1);
-		}
 		else {
 			i = chanel.substr(pos1, pos2);
 			pos1 = pos2 + 1;
 		}
-		if (pos4 == std::string::npos){
+		if (pos4 == std::string::npos)
 			j = mdp.substr(pos3);
-		}
 		else{
 			j = mdp.substr(pos3, pos4);
 			pos3 = pos4 + 1;
@@ -167,62 +163,7 @@ void	Server::CommandJOIN(User *user, std::string message)
 	{
 		CommandJOIN2(user, it->first, it->second);
 	}
-	/*size_t pos1 = 0;
-	size_t pos2 = message.find(',');
-
-	size_t posSpace = message.find(' ');
-	
-	std::string mdp = message.substr(posSpace);
-	size_t pos3 = 0;
-	size_t pos4 = mdp.find(',');
-	std::map<std::string, Channel*>::iterator it;
-	while (1)
-	{
-		
-		std::string nameChannel = message.substr(pos1, pos2);
-		if (pos4 >= pos3)
-			std::string mdpChannel = "";
-		else
-			std::string mdpChannel = mdp.substr(pos3, pos4);
-		CommandJOIN2(user, nameChannel, mdp);
-		pos1 = pos2;
-		pos2 += message.find(',');
-		pos3 = pos4;
-		pos4 += mdp.find(',');
-		if (pos2 >= posSpace)
-			break ;
-		
-	}*/
 }
-/*
-size_t pos1 = command.find(' ');
-size_t pos2 = command.find(' ', pos1 + 1);
-void	Server::CommandJOIN(User *user, std::string message)
-{
-	std::cout << message << "\n";
-	std::map<std::string, Channel*>::iterator it;
-	for (it = ChannelTab.begin(); it != ChannelTab.end(); ++it)
-	{
-		std::string name = it->first;
-		Channel* channel = it->second;
-		if (message == name)
-		{
-			channel->Channel::AddUser(user);
-			user->setChannel(message);
-			std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";	
-			send(user->getSocket(), response4.c_str(), response4.size(), 0);
-			CommandNAMES(user, channel);
-			return;
-		}
-	}
-	Channel* newChannel = new Channel(message);
-	newChannel->Channel::AddUser(user);
-	user->setChannel(message);
-	ChannelTab[message] = newChannel;
-	std::string response4 = user->getID() + " JOIN " + newChannel->getName() + "\r\n";
-	send(user->getSocket(), response4.c_str(), response4.size(), 0);
-	CommandNAMES(user, newChannel);
-}*/
 
 void	Server::CommandNAMES(User *user, Channel *channel)
 {
@@ -267,6 +208,85 @@ void	Server::CommandPART(User *user, std::string message)
 			user->setChannel("");
 			return;
 		}
+	}
+}
+
+void	Server::CommandMODE2(User *user, char cha, int status, std::string supmode, std::string nameChannel)
+{
+	std::map<std::string, Channel*>::iterator it;
+	for (it = ChannelTab.begin(); it != ChannelTab.end(); ++it)
+	{
+		std::string name = it->first;
+		Channel* channel = it->second;
+		if (nameChannel == name)
+		{
+			switch (cha)
+			{
+				case 'k':
+					ModeK(user, channel, supmode, status);
+					break ;
+			}
+		}
+	}
+}
+
+void	Server::CommandMODE(User *user, std::string message)
+{
+	std::string mode;
+	std::string supmode;
+	std::string chanel;
+	size_t end = message.find(' ');
+	if (end == std::string::npos)
+		return ;
+	chanel = message.substr(0, end);
+	message = message.substr(end + 1);
+	end = message.find(' ');
+	if (end == std::string::npos)
+	{
+		mode = message;
+		supmode = "";
+	}
+	else
+	{
+		mode = message.substr(0, end);
+		supmode = message.substr(end + 1);
+	}
+	int i = -1;
+	int status = 0;
+	size_t pos1 = 0;
+	size_t pos2 = supmode.find(' ');
+	// k o l 
+
+	// i t 
+	while (++i < mode.size())
+	{
+		if (mode[i] == '+')
+		{
+			status = 0;
+			continue;
+		}
+		else if (mode[i] == '-')
+		{
+			status = 1;
+			continue;
+		}
+		if (mode[i] == 'i' || mode[i] == 't' || mode[i] == 'k' || mode[i] == 'o' || mode[i] == 'l')
+		{
+			if (mode[i] == 'i' || mode[i] == 't')
+			{
+				CommandMODE2(user, mode[i], status, "", chanel);
+				continue;
+			}
+			if (pos2 == std::string::npos)
+				CommandMODE2(user, mode[i], status, supmode.substr(pos1), chanel);
+			else{
+				CommandMODE2(user, mode[i], status, supmode.substr(pos1, pos2), chanel);
+				pos1 = pos2 + 1;
+			}
+		}
+		else
+			continue;
+		size_t pos2 = supmode.find(' ', pos1);
 	}
 }
 

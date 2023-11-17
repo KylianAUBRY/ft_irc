@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 14:40:59 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/16 15:21:30 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/17 15:24:00 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,6 +164,10 @@ void	Server::FindCommand(User *user, std::string command)
 	if (command.substr(0, pos1) == "PART")
 	{
 		CommandPART(user, command.substr(pos1 + 1, pos2));
+	}
+	if (command.substr(0, pos1) == "MODE")
+	{
+		CommandMODE(user, command.substr(pos1 + 1));
 	}
 }
 

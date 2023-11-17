@@ -5,6 +5,7 @@ SRCS	=	src/main.cpp \
 			src/User.cpp \
 			src/Channel.cpp \
 			src/CmdServer.cpp \
+			src/mode.cpp \
 
 OBJ =	${SRCS:.cpp=.o}
 
