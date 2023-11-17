@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 12:09:23 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/17 15:26:58 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/17 17:49:51 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,18 +69,14 @@ void	Server::CommandNICK(User *user, std::string message)
 			{
 				usernameExists = true;
 				std::string response3 = ":server 433 " + user->getNickname() + " " + message + " :Nickname is already in use\r\n";
-				std::cout << "test " << response3 << std::endl;
 				send(user->getSocket(), response3.c_str(), response3.size(), 0);
 				break;
-	
-				
 			}
 		}
 		if (usernameExists == false)
 		{
 			std::string response3 = user->getID() + " NICK " + message + "\r\n";
 			user->User::setNickname(message);
-			std::cout << "test " << response3 << std::endl;
 			send(user->getSocket(), response3.c_str(), response3.size(), 0);
 		}
 	}
@@ -248,6 +244,9 @@ void	Server::CommandMODE2(User *user, char cha, int status, std::string supmode,
 				case 'k':
 					ModeK(user, channel, supmode, status);
 					break ;
+				case 't':
+					ModeT(user, channel, status);
+					break;
 			}
 		}
 	}
@@ -313,6 +312,34 @@ void	Server::CommandMODE(User *user, std::string message)
 	}
 }
 
+void	Server::CommandTOPIC(User *user, std::string message)
+{
+	std::string chanel;
+	size_t end = message.find(' ');
+	if (end == std::string::npos)
+		return ;
+	chanel = message.substr(0, end);
+	std::map<std::string, Channel*>::iterator it;
+	for (it = ChannelTab.begin(); it != ChannelTab.end(); ++it)
+	{
+		std::string name = it->first;
+		Channel* channel = it->second;
+		if (chanel == name)
+		{
+			if (channel->getMode('t') == false)
+			{
+				std::string response = user->getID() + " TOPIC " + channel->getName() + " :" + message.substr(end) + "\r\n";
+				send(user->getSocket(), response.c_str(), response.size(), 0);
+				channel->SendMsg(user ,response);
+			}
+			else
+			{
+				std::string response = ":server 482 " + user->getNickname() + " " + channel->getName() + " :You do not have access to change the topic on this channel" + "\r\n";
+				send(user->getSocket(), response.c_str(), response.size(), 0);
+			}
+		}
+	}
+}
 
 Channel	*Server::FindChannel(std::string search)
 {
