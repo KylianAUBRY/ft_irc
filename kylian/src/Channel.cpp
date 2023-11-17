@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 15:03:01 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/16 18:36:15 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/17 17:57:49 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 Channel::Channel(std::string name) : _name(name)
 {
 	this->_password = "";
+	this->_modeK = false;
+	this->_modeT = true;
 }
 
 Channel::~Channel()
@@ -30,14 +32,8 @@ void Channel::AddUser(User *user, std::string mdp, int super)
 {
 	if (IsHere(user) == true)
 		return ;
-	if (this->_password != "" && mdp != this->_password)
-	{
-		std::string response = user->getID() + " :Password incorrect" + "\r\n";
-		send(user->getSocket(), response.c_str(), response.size(), 0);
-		return ;
-	}
+	
 	this->UserBook[user] = super;
-	std::cout << "test " << user->getNickname() << super << "\n";
 }
 
 void  Channel::DelUser(User *user)
@@ -109,5 +105,55 @@ bool Channel::isEmpty()
 {
 	if (UserBook.empty())
 		return true;
+	return false;
+}
+
+void Channel::SetMode(char mode, bool x)
+{
+    switch (mode) 
+    {
+        case 'k':
+            this->_modeK = x;
+            break;
+        case 'i':
+            // Traitement pour le mode 'i'
+            break;
+        case 't':
+            this->_modeT = x;
+            break;
+        case 'o':
+            // Traitement pour le mode 'o'
+            break;
+        case 'l':
+            // Traitement pour le mode 'l'
+            break;
+        default:
+            // Code à exécuter par défaut si le mode n'est pas l'un des cas précédents
+            break;
+    }
+}
+
+bool Channel::getMode(char mode)
+{
+	switch (mode) 
+	{
+        case 'k':
+           return (this->_modeK);
+        case 'i':
+            // Traitement pour le mode 'i'
+            break;
+        case 't':
+            return (this->_modeT);
+            break;
+        case 'o':
+            // Traitement pour le mode 'o'
+            break;
+        case 'l':
+            // Traitement pour le mode 'l'
+            break;
+        default:
+            // Code à exécuter par défaut si le mode n'est pas l'un des cas précédents
+            break;
+    }
 	return false;
 }

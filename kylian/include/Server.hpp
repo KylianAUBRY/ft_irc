@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 14:31:57 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/17 15:23:16 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/17 16:39:30 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ class Server
 		bool	Server_loop();
 
 		void	CommandCAP(User *user);
-		int	CommandPASS(User *user, std::string pass);
+		int		CommandPASS(User *user, std::string pass);
 		void	CommandNICK(User *user, std::string message);
 		void	CommandJOIN(User *user, std::string message);
 		void 	CommandJOIN2(User *user, std::string nameChannel, std::string mdp);
@@ -58,9 +58,12 @@ class Server
 		void	CommandPART(User *user, std::string message);
 		void	CommandMODE(User *user, std::string message);
 		void	CommandMODE2(User *user, char channel, int status, std::string supmode, std::string nameChannel);
+		void	CommandTOPIC(User *user, std::string message);
 
 		void 	ModeK(User *user, Channel *channel, std::string message, int i);
 		void 	ModeI(User *user, Channel *channel, int i);
+		void 	ModeT(User *user, Channel *channel, int i);
+
 
 		void	SendMessage(User *user, Channel *channel, std::string mes);
 		Channel	*FindChannel(std::string search);
