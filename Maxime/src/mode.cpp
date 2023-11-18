@@ -117,6 +117,15 @@ void 	Server::ModeT(User *user, Channel *channel, int i)
 
 void 	Server::ModeL(User *user, Channel *channel, std::string message, int i)
 {
+	for (std::string::const_iterator it = message.begin(); it != message.end(); ++it)
+	{
+		if (!std::isdigit(static_cast<unsigned char>(*it)))
+			return;
+	}
+	if (message.length() > 10)
+		return;
+	if (stoll(message) > std::numeric_limits<int>::max())
+		return;
 	if (channel->isOp(user->getNickname()) == 0)
 	{
 		std::string response = ":server 482 " + user->getNickname() + " " + channel->getName() + " :You're not channel operator\r\n";

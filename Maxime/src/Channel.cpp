@@ -40,7 +40,6 @@ void Channel::AddUser(User *user, std::string mdp, int super)
 	if (IsHere(user) == true)
 		return ;
 	this->UserBook[user] = super;
-	std::cout << "test " << user->getNickname() << super << "\n";
 }
 
 void  Channel::DelUser(User *user)
@@ -133,7 +132,6 @@ void Channel::SetMode(char mode, bool x)
 
 bool Channel::getMode(char mode)
 {
-	std::cout << "get\n";
 	switch (mode) 
 	{
         case 'k':
@@ -163,6 +161,7 @@ int Channel::isOp(std::string nickname)
 			return (it->second);
 		}
 	}
+	return (0);
 }
 
 void Channel::changeOp(std::string nickname, int op)
@@ -198,4 +197,21 @@ bool Channel::isPlace()
 	if (this->getNbUser() < this->_userLimit)
 		return true;
 	return false; 
+}
+
+bool Channel::IsInvite(User *user)
+{
+    for (std::vector<User*>::iterator it = UserInvite.begin(); it != UserInvite.end(); ++it)
+    {
+        if ((*it)->getSocket() == user->getSocket())
+            return true;
+    }
+    return false;
+}
+
+void Channel::addUserInvite(User *user)
+{
+    if (IsInvite(user))
+        return;
+    UserInvite.push_back(user);
 }

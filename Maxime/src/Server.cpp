@@ -178,6 +178,10 @@ void	Server::FindCommand(User *user, std::string command)
 	{
 		CommandINVITE(user, command.substr(pos1 + 1));
 	}
+	if (command.substr(0, pos1) == "KICK")
+	{
+		CommandKICK(user, command.substr(pos1 + 1));
+	}
 }
 
 Server::Server(std::string const &port, std::string const &password) : _password(password)

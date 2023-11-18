@@ -36,6 +36,8 @@ class Channel
 		void SetUserLimit(int limit);
 		int getNbUser();
 		bool isPlace();
+		void addUserInvite(User *user);
+		bool IsInvite(User *user);
 	private :
 		std::string _password;
 		const std::string _name;
