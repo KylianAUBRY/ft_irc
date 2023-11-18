@@ -358,14 +358,14 @@ void	Server::CommandNAMES(User *user, Channel *channel)
 
 void	Server::CommandPRIVMSG(User *user, std::string message)
 {
+	
 	size_t Pos = message.find(':');
-    std::string mes = message.substr(Pos + 1);
-    message = message.substr(0, Pos - 1);
+	std::string mes = message.substr(Pos + 1);
+	message = message.substr(0, Pos - 1);
 	std::map<std::string, Channel*>::iterator it;
 	for (it = ChannelTab.begin(); it != ChannelTab.end(); ++it)
 	{
 		std::string name = it->first;
-		std::cout << message << " " << name << std::endl;
 		Channel* channel = it->second;
 		if (message == name)
 		{
@@ -373,6 +373,20 @@ void	Server::CommandPRIVMSG(User *user, std::string message)
 			return;
 		}
 	}
+	std::map<int, User*>::iterator itt;
+	for (itt = UserTab.begin(); itt != UserTab.end(); ++itt)
+	{
+		User* userT = itt->second;
+		if (message == userT->getNickname())
+		{
+			
+			std::string response1 = user->getID() + " PRIVMSG " + userT->getNickname() + " " + mes + "\r\n";
+			send(userT->getSocket(), response1.c_str(), response1.size(), 0);
+			return;
+		}
+	}
+	std::string response = ":server 401 " + user->getNickname() + " " + message + " :No such nick\r\n";
+	send(user->getSocket(), response.c_str(), response.size(), 0);
 }
 
 void	Server::CommandPART(User *user, std::string message)
@@ -512,14 +526,6 @@ void	Server::SendMessage(User *user, Channel *channel, std::string mes)
 		return ;
 	std::string response4 = ":" + user->getNickname() + " PRIVMSG " + channel->getName() + " :" + mes + "\r\n";
 	channel->SendMsg(user, response4);
-	/*std::map<int, User*>::iterator it;
-	for (it = UserTab.begin(); it != UserTab.end(); ++it)
-	{
-		User* test = it->second;
-		if (test->getSocket() != user->getSocket())
-			send(test->getSocket(), response4.c_str(), response4.size(), 0);
-		
-	}*/
 }
 
 void	Server::CommandTOPIC(User *user, std::string message)
