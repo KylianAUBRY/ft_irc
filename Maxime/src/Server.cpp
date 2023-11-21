@@ -88,13 +88,7 @@ bool Server::Server_loop()
 	std::signal(SIGINT, Server::handle_signal);
 	while (Stop == 0)
 	{
-		int num_ready = poll(client_fds.data(), this->numConnection + 1, 1000000); // a ajuster le time 
-		/*if ( num_ready < 0 )//&& Stop == 1 )
-			std::cout << "\nServer: Poll error" << std::endl;
-		else if ( num_ready == 1 )//&& Stop == 1 )
-		{
-			std::cout << "\nServer: intercepted signal" << std::endl;
-		}*/
+		int num_ready = poll(client_fds.data(), this->numConnection + 1, 1000000);
 		ConnectClient();
 		std::map<int, User*> UserTab2 = UserTab;
 		std::map<int, User*>::iterator it;

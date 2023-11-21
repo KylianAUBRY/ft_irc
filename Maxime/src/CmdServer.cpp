@@ -14,8 +14,7 @@
 
 void	Server::CommandCAP(User *user)
 {
-	std::string capabilities = "sasl";
-	std::string response = "CAP * LS :" + capabilities + "\r\n";
+	std::string response = "CAP * LS :\r\n";
 	send(user->getSocket(), response.c_str(), response.size(), 0);
 }
 
