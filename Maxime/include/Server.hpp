@@ -16,6 +16,8 @@
 # include "Channel.hpp"
 # include "User.hpp"
 
+static bool Stop = 0;
+
 struct s_socket
 {
 	int fd;
@@ -71,4 +73,5 @@ class Server
 
 		void	SendMessage(User *user, Channel *channel, std::string mes);
 		Channel	*FindChannel(std::string search);
+		static void	handle_signal(int signal);
 };

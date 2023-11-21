@@ -14,6 +14,7 @@
 
 # include <iostream>
 # include <climits>
+# include <csignal>
 # include <sstream>
 # include <algorithm>
 # include <string>

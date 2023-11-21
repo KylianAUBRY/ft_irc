@@ -85,7 +85,8 @@ bool Server::Server_loop()
 	std::vector<pollfd> &client_fds = *poll_fds;
 	client_fds[0].fd = this->SServer.fd;
 	client_fds[0].events = POLLIN;
-	while (1)
+	std::signal(SIGINT, Server::handle_signal);
+	while (Stop == 0)
 	{
 		int num_ready = poll(client_fds.data(), this->numConnection + 1, 1000000); // a ajuster le time 
 		/*if ( num_ready < 0 )//&& Stop == 1 )
@@ -94,17 +95,29 @@ bool Server::Server_loop()
 		{
 			std::cout << "\nServer: intercepted signal" << std::endl;
 		}*/
-			ConnectClient();
-			std::map<int, User*> UserTab2 = UserTab;
-			std::map<int, User*>::iterator it;
-			for (it = UserTab2.begin(); it != UserTab2.end(); ++it)
-			{
-				int num = it->first;
-				User *user = it->second;
-				HandleMessage(user, num + 1, client_fds);
-			}
+		ConnectClient();
+		std::map<int, User*> UserTab2 = UserTab;
+		std::map<int, User*>::iterator it;
+		for (it = UserTab2.begin(); it != UserTab2.end(); ++it)
+		{
+			int num = it->first;
+			User *user = it->second;
+			HandleMessage(user, num + 1, client_fds);
+		}
 	}
-	
+	if (UserTab.size() != 0)
+	{
+		std::map<int, User*> UserTab2 = UserTab;
+		std::map<int, User*>::iterator it;
+		for (it = UserTab2.begin(); it != UserTab2.end(); ++it)
+		{
+			int num = it->first;
+			User *user = it->second;
+			CommandQUIT(user, ":Stop Server");
+		}
+	}
+	close(this->SServer.fd);
+	delete poll_fds;
 }
 
 void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
@@ -212,6 +225,12 @@ Server::Server(std::string const &port, std::string const &password) : _password
 		return ;
 	if (Server_loop() == false)
 		return ;
+}
+
+void	Server::handle_signal(int signal)
+{
+	if (signal == SIGINT)
+		Stop = 1;
 }
 
 Server::~Server() {}

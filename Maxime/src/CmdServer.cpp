@@ -37,7 +37,6 @@ int	Server::CommandPASS(User *user, std::string pass)
 
 void	Server::CommandNICK(User *user, std::string message)
 {
-	//////////// a modifier
 	if (user->getGetNick() == false)
 	{
 		std::map<int, User*>::iterator it;
@@ -398,16 +397,16 @@ void	Server::CommandPART(User *user, std::string message)
 		Channel* channel = it->second;
 		if (message == name)
 		{
+			std::string response4 = user->getID() + " PART " + channel->getName() + " :" + user->getNickname() + "\r\n";
+			send(user->getSocket(), response4.c_str(), response4.size(), 0);
+			channel->SendMsg(user, response4);
+			user->setChannel("");
 			channel->DelUser(user);
 			if (channel->isEmpty() == true)
 			{
 				delete channel;
 				ChannelTab.erase(it);
 			}
-			std::string response4 = user->getID() + " PART " + channel->getName() + " :" + user->getNickname() + "\r\n";
-			send(user->getSocket(), response4.c_str(), response4.size(), 0);
-			channel->SendMsg(user, response4);
-			user->setChannel("");
 			return;
 		}
 	}
@@ -664,17 +663,16 @@ void	Server::CommandQUIT(User *user, std::string message)
 			Channel* channel = it->second;
 			if (chan == name)
 			{
+				user->setChannel("");
+				std::string response1 = user->getID() + " QUIT " + " :" + mes + "\r\n";
+				send(user->getSocket(), response1.c_str(), response1.size(), 0);
+				channel->SendMsg(user, response1);
 				channel->DelUser(user);
 				if (channel->isEmpty() == true)
 				{
 					delete channel;
 					ChannelTab.erase(it);
 				}
-				user->setChannel("");
-				std::string response1 = user->getID() + " QUIT " + " :" + mes + "\r\n";
-				send(user->getSocket(), response1.c_str(), response1.size(), 0);
-				channel->SendMsg(user, response1);
-				
 				std::map<int, User*>::iterator itt;
 				for (itt = UserTab.begin(); itt != UserTab.end(); ++itt)
 				{
