@@ -94,10 +94,10 @@ bool Server::Server_loop()
 		{
 			std::cout << "\nServer: intercepted signal" << std::endl;
 		}*/
-		
 			ConnectClient();
+			std::map<int, User*> UserTab2 = UserTab;
 			std::map<int, User*>::iterator it;
-			for (it = UserTab.begin(); it != UserTab.end(); ++it)
+			for (it = UserTab2.begin(); it != UserTab2.end(); ++it)
 			{
 				int num = it->first;
 				User *user = it->second;
@@ -181,6 +181,10 @@ void	Server::FindCommand(User *user, std::string command)
 	if (command.substr(0, pos1) == "KICK")
 	{
 		CommandKICK(user, command.substr(pos1 + 1));
+	}
+	if (command.substr(0, pos1) == "QUIT")
+	{
+		CommandQUIT(user, command.substr(pos1 + 1));
 	}
 }
 
