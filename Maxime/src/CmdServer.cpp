@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 12:09:23 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/17 15:26:58 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/20 17:30:28 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -468,9 +468,8 @@ void	Server::CommandMODE(User *user, std::string message)
 	int i = -1;
 	int status = 0;
 	size_t pos1 = 0;
-	size_t pos2 = supmode.find(' ');
+	size_t pos2 = supmode.find(',');
 	// k o l 
-
 	// i t 
 	while (++i < mode.size())
 	{
@@ -484,7 +483,7 @@ void	Server::CommandMODE(User *user, std::string message)
 			status = 1;
 			continue;
 		}
-		if (mode[i] == 'i' || mode[i] == 't' || mode[i] == 'k' || mode[i] == 'o' || mode[i] == 'l')
+		else if (mode[i] == 'i' || mode[i] == 't' || mode[i] == 'k' || mode[i] == 'o' || mode[i] == 'l')
 		{
 			if (mode[i] == 'i' || mode[i] == 't')
 			{
@@ -494,13 +493,11 @@ void	Server::CommandMODE(User *user, std::string message)
 			if (pos2 == std::string::npos)
 				CommandMODE2(user, mode[i], status, supmode.substr(pos1), chanel);
 			else{
-				CommandMODE2(user, mode[i], status, supmode.substr(pos1, pos2), chanel);
+				CommandMODE2(user, mode[i], status, supmode.substr(pos1, pos2 - pos1), chanel);
 				pos1 = pos2 + 1;
+				pos2 = supmode.find(',', pos1);
 			}
 		}
-		else
-			continue;
-		size_t pos2 = supmode.find(' ', pos1);
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 14:40:59 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/17 16:28:45 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/21 13:19:35 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,44 @@ bool Server::Server_loop()
 
 void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 {
+	std::string message2;
+	if (client_fds[num].revents & POLLIN)
+	{
+		while (1)
+		{
+			char buffer[255];
+			ssize_t bytesRead = recv(client_fds[num].fd, buffer, sizeof(buffer), 0);
+			if (bytesRead > 0)
+			{
+				std::string message1(buffer, bytesRead);
+				message2 += message1;
+				size_t end = message2.find("\r\n", 0);
+				size_t pos = 0;
+				if (end != std::string::npos)
+				{
+					//std::cout << user->getUsername() << " command recu entierement : " << message2;
+					while (end != std::string::npos)
+					{
+						std::string firstCommand = message2.substr(pos, end + 2 - pos);
+						pos = end + 2;
+						FindCommand(user, firstCommand);
+						end = message2.find("\r\n", pos);
+					}
+					message2 = "";
+					return ;
+				}
+				else
+				{
+					//std::cout << "non ressus entierement "<< message2 << '\n';
+					continue;
+				}
+			}
+		}
+	}
+}
+
+/*void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
+{
 	if (client_fds[num].revents & POLLIN)
 	{
 		char buffer[1024];
@@ -116,7 +154,7 @@ void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 		if (bytesRead > 0)
 		{
 			std::string message(buffer, bytesRead);
-			std::cout << user->getUsername() << " command : " << message << std::endl;
+			std::cout << user->getUsername() << " command : " << message;
 			
 			size_t end = message.find("\r\n", 0);
 			size_t pos = 0;
@@ -128,14 +166,23 @@ void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 				end = message.find("\r\n", pos);
 			}
 		}
+		else
+			std::cout << "Error\n" << "Recv failed" << '\n';
 	}
-}
+}*/
 
 void	Server::FindCommand(User *user, std::string command)
 {
 	static int passOK = 1;
 	size_t found = command.find("\r\n");
-	command.erase(found, 2);
+	if (found != std::string::npos)
+		command.erase(found, 2);
+	else
+	{
+		size_t found = command.find("\n");
+		if (found != std::string::npos)
+			command.erase(found, 1);
+	}
 	size_t pos1 = command.find(' ');
 	size_t pos2 = command.find(' ', pos1 + 1);
 	if (command.substr(0, pos1) == "CAP")
@@ -173,6 +220,14 @@ void	Server::FindCommand(User *user, std::string command)
 	if (command.substr(0, pos1) == "TOPIC")
 	{
 		CommandTOPIC(user, command.substr(pos1 + 1));
+	}
+	if (command.substr(0, pos1) == "INVITE")
+	{
+		CommandINVITE(user, command.substr(pos1 + 1));
+	}
+	if (command.substr(0, pos1) == "KICK")
+	{
+		CommandKICK(user, command.substr(pos1 + 1));
 	}
 }
 

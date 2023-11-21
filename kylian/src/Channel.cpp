@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 15:03:01 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/17 17:57:49 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/20 11:22:25 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,19 +116,15 @@ void Channel::SetMode(char mode, bool x)
             this->_modeK = x;
             break;
         case 'i':
-            // Traitement pour le mode 'i'
+            this->_modeI = x;
             break;
         case 't':
             this->_modeT = x;
             break;
-        case 'o':
-            // Traitement pour le mode 'o'
-            break;
         case 'l':
-            // Traitement pour le mode 'l'
+            this->_modeL = x;
             break;
         default:
-            // Code à exécuter par défaut si le mode n'est pas l'un des cas précédents
             break;
     }
 }
@@ -140,20 +136,82 @@ bool Channel::getMode(char mode)
         case 'k':
            return (this->_modeK);
         case 'i':
-            // Traitement pour le mode 'i'
+           return (this->_modeI);
             break;
         case 't':
             return (this->_modeT);
             break;
-        case 'o':
-            // Traitement pour le mode 'o'
-            break;
         case 'l':
-            // Traitement pour le mode 'l'
+            return (this->_modeL);
             break;
         default:
-            // Code à exécuter par défaut si le mode n'est pas l'un des cas précédents
             break;
     }
-	return false;
+    	return false;
+}
+
+
+int Channel::isOp(std::string nickname)
+{
+	std::map<User*, int>::iterator it;
+	for (it = UserBook.begin(); it != UserBook.end(); ++it)
+	{
+		if (it->first->getNickname() == nickname)
+		{
+			return (it->second);
+		}
+	}
+	return (0);
+}
+
+void Channel::changeOp(std::string nickname, int op)
+{
+	std::map<User*, int>::iterator it;
+	for (it = UserBook.begin(); it != UserBook.end(); ++it)
+	{
+		if (it->first->getNickname() == nickname)
+		{
+			it->second = op;
+		}
+	}
+}
+
+void Channel::SetUserLimit(int limit)
+{
+	this->_userLimit = limit;
+}
+
+int Channel::getNbUser()
+{
+	int i = 0;
+	std::map<User*, int>::iterator it;
+	for (it = UserBook.begin(); it != UserBook.end(); ++it)
+	{
+		i++;
+	}
+	return (i);
+}
+
+bool Channel::isPlace()
+{
+	if (this->getNbUser() < this->_userLimit)
+		return true;
+	return false; 
+}
+
+bool Channel::IsInvite(User *user)
+{
+    for (std::vector<User*>::iterator it = UserInvite.begin(); it != UserInvite.end(); ++it)
+    {
+        if ((*it)->getSocket() == user->getSocket())
+            return true;
+    }
+    return false;
+}
+
+void Channel::addUserInvite(User *user)
+{
+    if (IsInvite(user))
+        return;
+    UserInvite.push_back(user);
 }

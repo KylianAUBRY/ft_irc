@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 12:09:23 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/17 17:49:51 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/20 16:11:48 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ int	Server::CommandPASS(User *user, std::string pass)
 
 void	Server::CommandNICK(User *user, std::string message)
 {
+	//////////// a modifier
 	if (user->getGetNick() == false)
 	{
 		std::map<int, User*>::iterator it;
@@ -71,6 +72,8 @@ void	Server::CommandNICK(User *user, std::string message)
 				std::string response3 = ":server 433 " + user->getNickname() + " " + message + " :Nickname is already in use\r\n";
 				send(user->getSocket(), response3.c_str(), response3.size(), 0);
 				break;
+	
+				
 			}
 		}
 		if (usernameExists == false)
@@ -110,13 +113,179 @@ void Server::CommandJOIN2(User *user, std::string nameChannel, std::string mdp)
 		Channel* channel = it->second;
 		if (nameChannel == name)
 		{
-			channel->Channel::AddUser(user, mdp, 0);
-			user->setChannel(nameChannel);
-			std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";	
-			send(user->getSocket(), response4.c_str(), response4.size(), 0);
-			channel->SendMsg(user, response4);
-			CommandNAMES(user, channel);
-			return;
+			if (channel->getMode('k') == true && channel->getMode('l') == true && channel->getMode('i') == true)
+			{
+				if (mdp == channel->getPassword() && channel->isPlace() == true && channel->IsInvite(user) == true)
+				{
+					channel->Channel::AddUser(user, mdp, 0);
+					user->setChannel(nameChannel);
+					std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";	
+					send(user->getSocket(), response4.c_str(), response4.size(), 0);
+					channel->SendMsg(user, response4);
+					CommandNAMES(user, channel);
+					return;
+				}
+				else if (channel->IsInvite(user) == false)
+				{
+					std::string response = ":server 473 " + user->getNickname() + " " + channel->getName() + " :Cannot join channel (+i)\r\n";
+					send(user->getSocket(), response.c_str(), response.size(), 0);
+					return;
+				}
+				else if (mdp != channel->getPassword())
+				{
+					std::string response = ":server 475 " + user->getNickname() + " " + channel->getName() + " :Cannot join channel (+k)\r\n";
+					send(user->getSocket(), response.c_str(), response.size(), 0);
+					return;
+				}
+				else if (mdp == channel->getPassword() && channel->isPlace() == false && channel->IsInvite(user) == true)
+				{
+					std::string response = ":server 471 " + user->getNickname() + " " + channel->getName() + " :Cannot join channel (+l)\r\n";
+					send(user->getSocket(), response.c_str(), response.size(), 0);
+					return;
+				}
+			}
+			else if (channel->getMode('k') == true && channel->getMode('l') == true)
+			{
+				if (mdp == channel->getPassword() && channel->isPlace() == true)
+				{
+					channel->Channel::AddUser(user, mdp, 0);
+					user->setChannel(nameChannel);
+					std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";	
+					send(user->getSocket(), response4.c_str(), response4.size(), 0);
+					channel->SendMsg(user, response4);
+					CommandNAMES(user, channel);
+					return;
+				}
+				else if (mdp != channel->getPassword())
+				{
+					std::string response = ":server 475 " + user->getNickname() + " " + channel->getName() + " :Cannot join channel (+k)\r\n";
+					send(user->getSocket(), response.c_str(), response.size(), 0);
+					return;
+				}
+				else if (channel->isPlace() == false)
+				{
+					std::string response = ":server 471 " + user->getNickname() + " " + channel->getName() + " :Cannot join channel (+l)\r\n";
+					send(user->getSocket(), response.c_str(), response.size(), 0);
+					return;
+				}
+			}
+			else if (channel->getMode('k') == true && channel->getMode('i') == true)
+			{
+				if (mdp == channel->getPassword() && channel->IsInvite(user) == true)
+				{
+					channel->Channel::AddUser(user, mdp, 0);
+					user->setChannel(nameChannel);
+					std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";	
+					send(user->getSocket(), response4.c_str(), response4.size(), 0);
+					channel->SendMsg(user, response4);
+					CommandNAMES(user, channel);
+					return;
+				}
+				else if (channel->IsInvite(user) == false)
+				{
+					std::string response = ":server 473 " + user->getNickname() + " " + channel->getName() + " :Cannot join channel (+i)\r\n";
+					send(user->getSocket(), response.c_str(), response.size(), 0);
+					return;
+				}
+				else if (mdp != channel->getPassword())
+				{
+					std::string response = ":server 475 " + user->getNickname() + " " + channel->getName() + " :Cannot join channel (+k)\r\n";
+					send(user->getSocket(), response.c_str(), response.size(), 0);
+					return;
+				}
+			}
+			else if (channel->getMode('l') == true && channel->getMode('i') == true)
+			{
+				if (channel->isPlace() == true && channel->IsInvite(user) == true)
+				{
+					channel->Channel::AddUser(user, mdp, 0);
+					user->setChannel(nameChannel);
+					std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";	
+					send(user->getSocket(), response4.c_str(), response4.size(), 0);
+					channel->SendMsg(user, response4);
+					CommandNAMES(user, channel);
+					return;
+				}
+				else if (channel->IsInvite(user) == false)
+				{
+					std::string response = ":server 473 " + user->getNickname() + " " + channel->getName() + " :Cannot join channel (+i)\r\n";
+					send(user->getSocket(), response.c_str(), response.size(), 0);
+					return;
+				}
+				else if (channel->isPlace() == false)
+				{
+					std::string response = ":server 471 " + user->getNickname() + " " + channel->getName() + " :Cannot join channel (+l)\r\n";
+					send(user->getSocket(), response.c_str(), response.size(), 0);
+					return;
+				}
+			}
+			else if (channel->getMode('i') == true)
+			{
+				if (channel->IsInvite(user) == true)
+				{
+					channel->Channel::AddUser(user, mdp, 0);
+					user->setChannel(nameChannel);
+					std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";	
+					send(user->getSocket(), response4.c_str(), response4.size(), 0);
+					channel->SendMsg(user, response4);
+					CommandNAMES(user, channel);
+					return;
+				}
+				else if (channel->IsInvite(user) == false)
+				{
+					std::string response = ":server 473 " + user->getNickname() + " " + channel->getName() + " :Cannot join channel (+i)\r\n";
+					send(user->getSocket(), response.c_str(), response.size(), 0);
+					return;
+				}
+			}
+			else if (channel->getMode('k') == true)
+			{
+				if (mdp == channel->getPassword())
+				{
+					channel->Channel::AddUser(user, mdp, 0);
+					user->setChannel(nameChannel);
+					std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";	
+					send(user->getSocket(), response4.c_str(), response4.size(), 0);
+					channel->SendMsg(user, response4);
+					CommandNAMES(user, channel);
+					return;
+				}
+				else if (mdp != channel->getPassword())
+				{
+					std::string response = ":server 475 " + user->getNickname() + " " + channel->getName() + " :Cannot join channel (+k)\r\n";
+					send(user->getSocket(), response.c_str(), response.size(), 0);
+					return;
+				}
+			}
+			else if (channel->getMode('l') == true)
+			{
+				if (channel->isPlace() == true)
+				{
+					channel->Channel::AddUser(user, mdp, 0);
+					user->setChannel(nameChannel);
+					std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";	
+					send(user->getSocket(), response4.c_str(), response4.size(), 0);
+					channel->SendMsg(user, response4);
+					CommandNAMES(user, channel);
+					return;
+				}
+				else if (channel->isPlace() == false)
+				{
+					std::string response = ":server 471 " + user->getNickname() + " " + channel->getName() + " :Cannot join channel (+l)\r\n";
+					send(user->getSocket(), response.c_str(), response.size(), 0);
+					return;
+				}
+			}
+			else
+			{
+				channel->Channel::AddUser(user, mdp, 0);
+				user->setChannel(nameChannel);
+				std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";	
+				send(user->getSocket(), response4.c_str(), response4.size(), 0);
+				channel->SendMsg(user, response4);
+				CommandNAMES(user, channel);
+				return;
+			}
 		}
 	}
 	Channel* newChannel = new Channel(nameChannel);
@@ -189,14 +358,14 @@ void	Server::CommandNAMES(User *user, Channel *channel)
 
 void	Server::CommandPRIVMSG(User *user, std::string message)
 {
+	
 	size_t Pos = message.find(':');
-    std::string mes = message.substr(Pos + 1);
-    message = message.substr(0, Pos - 1);
+	std::string mes = message.substr(Pos + 1);
+	message = message.substr(0, Pos - 1);
 	std::map<std::string, Channel*>::iterator it;
 	for (it = ChannelTab.begin(); it != ChannelTab.end(); ++it)
 	{
 		std::string name = it->first;
-		std::cout << message << " " << name << std::endl;
 		Channel* channel = it->second;
 		if (message == name)
 		{
@@ -204,6 +373,20 @@ void	Server::CommandPRIVMSG(User *user, std::string message)
 			return;
 		}
 	}
+	std::map<int, User*>::iterator itt;
+	for (itt = UserTab.begin(); itt != UserTab.end(); ++itt)
+	{
+		User* userT = itt->second;
+		if (message == userT->getNickname())
+		{
+			
+			std::string response1 = user->getID() + " PRIVMSG " + userT->getNickname() + " " + mes + "\r\n";
+			send(userT->getSocket(), response1.c_str(), response1.size(), 0);
+			return;
+		}
+	}
+	std::string response = ":server 401 " + user->getNickname() + " " + message + " :No such nick\r\n";
+	send(user->getSocket(), response.c_str(), response.size(), 0);
 }
 
 void	Server::CommandPART(User *user, std::string message)
@@ -244,8 +427,17 @@ void	Server::CommandMODE2(User *user, char cha, int status, std::string supmode,
 				case 'k':
 					ModeK(user, channel, supmode, status);
 					break ;
+				case 'o':
+					ModeO(user,channel, supmode, status);
+					break;
 				case 't':
 					ModeT(user, channel, status);
+					break;
+				case 'l':
+					ModeL(user,channel, supmode, status);
+					break;
+				case 'i':
+					ModeI(user, channel, status);
 					break;
 			}
 		}
@@ -308,8 +500,32 @@ void	Server::CommandMODE(User *user, std::string message)
 		}
 		else
 			continue;
-		size_t pos2 = supmode.find(' ', pos1);
+		size_t pos2 = supmode.find(',', pos1);
 	}
+}
+
+
+Channel	*Server::FindChannel(std::string search)
+{
+	std::map<std::string, Channel*>::iterator it;
+	for (it = ChannelTab.begin(); it != ChannelTab.end(); ++it)
+	{
+		std::string name = it->first;
+		Channel* channel = it->second;
+		if (search == name)
+		{
+			return(channel);
+		}
+	}
+	return(NULL);
+}
+
+void	Server::SendMessage(User *user, Channel *channel, std::string mes)
+{
+	if (channel->IsHere(user) == false)
+		return ;
+	std::string response4 = ":" + user->getNickname() + " PRIVMSG " + channel->getName() + " :" + mes + "\r\n";
+	channel->SendMsg(user, response4);
 }
 
 void	Server::CommandTOPIC(User *user, std::string message)
@@ -341,34 +557,97 @@ void	Server::CommandTOPIC(User *user, std::string message)
 	}
 }
 
-Channel	*Server::FindChannel(std::string search)
+void	Server::CommandINVITE(User *user, std::string message)
 {
+	size_t pos = message.find(' ');
+	std::string username = message.substr(0, pos);
+	std::string channelname = message.substr(pos + 1);
+   	Channel* channel1;
 	std::map<std::string, Channel*>::iterator it;
 	for (it = ChannelTab.begin(); it != ChannelTab.end(); ++it)
 	{
 		std::string name = it->first;
 		Channel* channel = it->second;
-		if (search == name)
+		if (channel->getName() == channelname)
 		{
-			return(channel);
+			channel1 = channel;
+			break;
 		}
 	}
-	return(NULL);
-}
-
-void	Server::SendMessage(User *user, Channel *channel, std::string mes)
-{
-	if (channel->IsHere(user) == false)
-		return ;
-	std::string response4 = ":" + user->getNickname() + " PRIVMSG " + channel->getName() + " :" + mes + "\r\n";
-	channel->SendMsg(user, response4);
-	/*std::map<int, User*>::iterator it;
-	for (it = UserTab.begin(); it != UserTab.end(); ++it)
+	if (channel1->isOp(user->getNickname()) == 0)
 	{
-		User* test = it->second;
-		if (test->getSocket() != user->getSocket())
-			send(test->getSocket(), response4.c_str(), response4.size(), 0);
-		
-	}*/
+		std::string response = ":server 482 " + user->getNickname() + " " + channel1->getName() + " :You're not channel operator\r\n";
+		send(user->getSocket(), response.c_str(), response.size(), 0);
+	}
+	else 
+	{
+		std::map<int, User*>::iterator it;
+		for (it = UserTab.begin(); it != UserTab.end(); ++it) 
+		{
+			User* userT = it->second;
+			if (username == userT->getNickname())
+			{
+				channel1->addUserInvite(userT);
+				std::string response1 = user->getID() + " " + "INVITE" + " " + username + " " + channel1->getName() + "\r\n";
+				send(userT->getSocket(), response1.c_str(), response1.size(), 0);	
+				std::string response = userT->getID() + " 341 " + user->getNickname() + " " + username + " " + channel1->getName() + "\r\n";
+				send(user->getSocket(), response.c_str(), response.size(), 0);
+				return;
+			}
+		}
+		std::string response = ":server 401 " + user->getNickname() + " " + username + " :No such nick\r\n";
+		send(user->getSocket(), response.c_str(), response.size(), 0);
+	}
 }
 
+void	Server::CommandKICK(User *user, std::string message)
+{
+	size_t pos = message.find(' ');
+	std::string channelname = message.substr(0, pos);
+	std::string remaining = message.substr(pos + 1);
+	size_t pos2 = remaining.find(' ');
+	std::string username = remaining.substr(0, pos2);
+	std::string usermessage = remaining.substr(pos2 + 1);
+   	Channel* channel1;
+	std::map<std::string, Channel*>::iterator it;
+	for (it = ChannelTab.begin(); it != ChannelTab.end(); ++it)
+	{
+		std::string name = it->first;
+		Channel* channel = it->second;
+		if (channel->getName() == channelname)
+		{
+			channel1 = channel;
+			break;
+		}
+	}
+	if (channel1->isOp(user->getNickname()) == 0)
+	{
+		std::string response = ":server 482 " + user->getNickname() + " " + channel1->getName() + " :You're not channel operator\r\n";
+		send(user->getSocket(), response.c_str(), response.size(), 0);
+	}
+	else 
+	{
+		std::map<int, User*>::iterator it;
+		for (it = UserTab.begin(); it != UserTab.end(); ++it) 
+		{
+			User* userT = it->second;
+			if (username == userT->getNickname())
+			{
+				channel1->DelUser(userT);
+				CommandPART(userT, channel1->getName());
+				std::string response1 = user->getID() + " " + "KICK" + " " + channel1->getName() + " " + username;
+				if (remaining.length() > 0)
+					response1 += " " + usermessage + "\r\n";
+				else
+					response1 += "\r\n";
+				send(user->getSocket(), response1.c_str(), response1.size(), 0);
+				if (userT->getNickname() != user->getNickname())
+					send(userT->getSocket(), response1.c_str(), response1.size(), 0);
+				channel1->SendMsg(user, response1);
+				return;
+			}
+		}
+		std::string response = ":server 441 " + user->getNickname() + " " + username + " " + channel1->getName() + " :They aren't on that channel\r\n";
+		send(user->getSocket(), response.c_str(), response.size(), 0);
+	}
+}
