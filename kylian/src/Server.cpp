@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
+/*   By: kylian <kylian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 14:40:59 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/21 13:19:35 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/22 15:54:55 by kylian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 				size_t pos = 0;
 				if (end != std::string::npos)
 				{
-					//std::cout << user->getUsername() << " command recu entierement : " << message2;
+					std::cout << user->getUsername() << " command recu entierement : " << message2;
 					while (end != std::string::npos)
 					{
 						std::string firstCommand = message2.substr(pos, end + 2 - pos);
