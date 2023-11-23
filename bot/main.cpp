@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 15:28:17 by kylian            #+#    #+#             */
-/*   Updated: 2023/11/23 17:17:25 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/23 20:34:38 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	handle_signal(int signal)
 
 void cleanupFunction()
 {
-	std::cout << "salut" << '\n';
+//	std::cout << "salut" << '\n';
     /*send(sock, "QUIT :leaving\r\n", 16, 0);
     close(sock);*/
 }
@@ -161,14 +161,29 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	pollfd *fds = new pollfd();
-	poll(fds, 1, 1000000);
+	std::cout << "Wd" << '\n';
 	while (Stop == 0)
 	{
-		if (fds->revents & POLLIN)
-			break ;
+		if (poll(fds, 1, 1) == 1)
+			std::cout << "lecture on" << '\n';
 		bytes = recv(sock, buffer, sizeof(buffer), 0);
 		buffer[bytes] = '\0';
-		std::cout << buffer << '\n';
+		if (bytes == 0)
+		{
+			delete(fds);
+			close(sock);
+			return 0;
+		}
+		if (std::strstr(buffer, " PRIVMSG #pays :") != NULL)
+		{
+			std::cout << std::strstr(buffer, " PRIVMSG #pays :") << '\n';
+		}
+		else if (std::strstr(buffer, " QUIT  :Stop Server") != NULL)
+		{
+			delete(fds);
+			close(sock);
+			return 0;
+		}
 	}
 	delete(fds);
 	send(sock, "QUIT :leaving\r\n", 16, 0);
