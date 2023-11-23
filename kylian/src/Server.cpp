@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kylian <kylian@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 14:40:59 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/22 15:54:55 by kylian           ###   ########.fr       */
+/*   Updated: 2023/11/21 13:02:16 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,26 +85,34 @@ bool Server::Server_loop()
 	std::vector<pollfd> &client_fds = *poll_fds;
 	client_fds[0].fd = this->SServer.fd;
 	client_fds[0].events = POLLIN;
-	while (1)
+	std::signal(SIGINT, Server::handle_signal);
+	while (Stop == 0)
 	{
-		int num_ready = poll(client_fds.data(), this->numConnection + 1, 1000000); // a ajuster le time 
-		/*if ( num_ready < 0 )//&& Stop == 1 )
-			std::cout << "\nServer: Poll error" << std::endl;
-		else if ( num_ready == 1 )//&& Stop == 1 )
+		int num_ready = poll(client_fds.data(), this->numConnection + 1, 1000000);
+		ConnectClient();
+		std::map<int, User*> UserTab2 = UserTab;
+		std::map<int, User*>::iterator it;
+		for (it = UserTab2.begin(); it != UserTab2.end(); ++it)
 		{
-			std::cout << "\nServer: intercepted signal" << std::endl;
-		}*/
-		
-			ConnectClient();
-			std::map<int, User*>::iterator it;
-			for (it = UserTab.begin(); it != UserTab.end(); ++it)
-			{
-				int num = it->first;
-				User *user = it->second;
-				HandleMessage(user, num + 1, client_fds);
-			}
+			int num = it->first;
+			User *user = it->second;
+			HandleMessage(user, num + 1, client_fds);
+		}
 	}
-	
+	if (UserTab.size() != 0)
+	{
+		std::map<int, User*> UserTab2 = UserTab;
+		std::map<int, User*>::iterator it;
+		for (it = UserTab2.begin(); it != UserTab2.end(); ++it)
+		{
+			int num = it->first;
+			User *user = it->second;
+			CommandQUIT(user, ":Stop Server");
+		}
+	}
+	close(this->SServer.fd);
+	delete poll_fds;
+	return true;
 }
 
 void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
@@ -124,7 +132,7 @@ void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 				size_t pos = 0;
 				if (end != std::string::npos)
 				{
-					std::cout << user->getUsername() << " command recu entierement : " << message2;
+					//std::cout << user->getUsername() << " command recu entierement : " << message2;
 					while (end != std::string::npos)
 					{
 						std::string firstCommand = message2.substr(pos, end + 2 - pos);
@@ -137,7 +145,7 @@ void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 				}
 				else
 				{
-					//std::cout << "non ressus entierement "<< message2 << '\n';
+					//std::cout << "non recus entierement "<< message2 << '\n';
 					continue;
 				}
 			}
@@ -145,44 +153,11 @@ void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 	}
 }
 
-/*void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
-{
-	if (client_fds[num].revents & POLLIN)
-	{
-		char buffer[1024];
-		ssize_t bytesRead = recv(client_fds[num].fd, buffer, sizeof(buffer), 0);
-		if (bytesRead > 0)
-		{
-			std::string message(buffer, bytesRead);
-			std::cout << user->getUsername() << " command : " << message;
-			
-			size_t end = message.find("\r\n", 0);
-			size_t pos = 0;
-			while (end != std::string::npos)
-			{
-				std::string firstCommand = message.substr(pos, end + 2 - pos);
-				pos = end + 2;
-				FindCommand(user, firstCommand);
-				end = message.find("\r\n", pos);
-			}
-		}
-		else
-			std::cout << "Error\n" << "Recv failed" << '\n';
-	}
-}*/
-
 void	Server::FindCommand(User *user, std::string command)
 {
 	static int passOK = 1;
 	size_t found = command.find("\r\n");
-	if (found != std::string::npos)
-		command.erase(found, 2);
-	else
-	{
-		size_t found = command.find("\n");
-		if (found != std::string::npos)
-			command.erase(found, 1);
-	}
+	command.erase(found, 2);
 	size_t pos1 = command.find(' ');
 	size_t pos2 = command.find(' ', pos1 + 1);
 	if (command.substr(0, pos1) == "CAP")
@@ -229,6 +204,10 @@ void	Server::FindCommand(User *user, std::string command)
 	{
 		CommandKICK(user, command.substr(pos1 + 1));
 	}
+	if (command.substr(0, pos1) == "QUIT")
+	{
+		CommandQUIT(user, command.substr(pos1 + 1));
+	}
 }
 
 Server::Server(std::string const &port, std::string const &password) : _password(password)
@@ -255,6 +234,12 @@ Server::Server(std::string const &port, std::string const &password) : _password
 		return ;
 	if (Server_loop() == false)
 		return ;
+}
+
+void	Server::handle_signal(int signal)
+{
+	if (signal == SIGINT)
+		Stop = 1;
 }
 
 Server::~Server() {}

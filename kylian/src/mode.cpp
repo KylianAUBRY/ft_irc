@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/17 14:23:04 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/20 11:20:42 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/23 14:20:17 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,14 +98,15 @@ void 	Server::ModeT(User *user, Channel *channel, int i)
 		std::string response = ":server 482 " + user->getNickname() + " " + channel->getName() + " :You're not channel operator\r\n";
 		send(user->getSocket(), response.c_str(), response.size(), 0);
 	}
-	if (channel->getMode('t') == false && i == 0)
+	else if (channel->getMode('t') == false && i == 0)
 	{
 		channel->SetMode('t', true);
 		std::string response = user->getID() + " MODE " + channel->getName() + " +t " + "\r\n";
 		send(user->getSocket(), response.c_str(), response.size(), 0);
 		channel->SendMsg(user ,response);
 		
-	}else if (channel->getMode('t') == true && i == 1)
+	}
+	else if (channel->getMode('t') == true && i == 1)
 	{
 		channel->SetMode('t', false);
 		std::string response = user->getID() + " MODE " + channel->getName() + " -t " + "\r\n";
@@ -116,6 +117,8 @@ void 	Server::ModeT(User *user, Channel *channel, int i)
 
 void 	Server::ModeL(User *user, Channel *channel, std::string message, int i)
 {
+	if (i == 0 && message.length() <= 0)
+		return ;
 	for (std::string::const_iterator it = message.begin(); it != message.end(); ++it)
 	{
 		if (!std::isdigit(static_cast<unsigned char>(*it)))
@@ -123,7 +126,7 @@ void 	Server::ModeL(User *user, Channel *channel, std::string message, int i)
 	}
 	if (message.length() > 10)
 		return;
-	if (stoll(message) > std::numeric_limits<int>::max())
+	if (i == 0 && stoll(message) > std::numeric_limits<int>::max())
 		return;
 	if (channel->isOp(user->getNickname()) == 0)
 	{

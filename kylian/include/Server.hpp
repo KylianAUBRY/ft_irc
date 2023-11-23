@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 14:31:57 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/20 11:25:33 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/17 15:23:16 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 # include "include.hpp"
 # include "Channel.hpp"
 # include "User.hpp"
+
+static bool Stop = 0;
 
 struct s_socket
 {
@@ -61,6 +63,7 @@ class Server
 		void	CommandTOPIC(User *user, std::string message);
 		void	CommandINVITE(User *user, std::string message);
 		void	CommandKICK(User *user, std::string message);
+		void	CommandQUIT(User *user, std::string message);
 
 		void 	ModeK(User *user, Channel *channel, std::string message, int i);
 		void 	ModeI(User *user, Channel *channel, int i);
@@ -70,4 +73,5 @@ class Server
 
 		void	SendMessage(User *user, Channel *channel, std::string mes);
 		Channel	*FindChannel(std::string search);
+		static void	handle_signal(int signal);
 };

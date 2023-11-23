@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 15:03:01 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/20 11:22:25 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/16 18:36:15 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ Channel::Channel(std::string name) : _name(name)
 	this->_password = "";
 	this->_modeK = false;
 	this->_modeT = true;
+	this->_modeL = false;
+	this->_modeI = false;
 }
 
 Channel::~Channel()
@@ -28,11 +30,15 @@ std::string Channel::getName(void)
 	return (_name);
 }
 
+std::string Channel::getPassword(void)
+{
+	return (_password);
+}
+
 void Channel::AddUser(User *user, std::string mdp, int super)
 {
 	if (IsHere(user) == true)
 		return ;
-	
 	this->UserBook[user] = super;
 }
 
@@ -96,11 +102,6 @@ void Channel::SetPassword(std::string password)
 	this->_password = password;
 }
 
-std::string Channel::getPassword(void)
-{
-	return _password;
-}
-
 bool Channel::isEmpty()
 {
 	if (UserBook.empty())
@@ -149,7 +150,6 @@ bool Channel::getMode(char mode)
     }
     	return false;
 }
-
 
 int Channel::isOp(std::string nickname)
 {

@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 12:09:23 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/20 16:11:48 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/23 14:12:21 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,7 @@
 
 void	Server::CommandCAP(User *user)
 {
-	std::string capabilities = "sasl";
-	std::string response = "CAP * LS :" + capabilities + "\r\n";
+	std::string response = "CAP * LS :\r\n";
 	send(user->getSocket(), response.c_str(), response.size(), 0);
 }
 
@@ -37,7 +36,6 @@ int	Server::CommandPASS(User *user, std::string pass)
 
 void	Server::CommandNICK(User *user, std::string message)
 {
-	//////////// a modifier
 	if (user->getGetNick() == false)
 	{
 		std::map<int, User*>::iterator it;
@@ -398,16 +396,16 @@ void	Server::CommandPART(User *user, std::string message)
 		Channel* channel = it->second;
 		if (message == name)
 		{
+			std::string response4 = user->getID() + " PART " + channel->getName() + " :" + user->getNickname() + "\r\n";
+			send(user->getSocket(), response4.c_str(), response4.size(), 0);
+			channel->SendMsg(user, response4);
+			user->setChannel("");
 			channel->DelUser(user);
 			if (channel->isEmpty() == true)
 			{
 				delete channel;
 				ChannelTab.erase(it);
 			}
-			std::string response4 = user->getID() + " PART " + channel->getName() + " :" + user->getNickname() + "\r\n";
-			send(user->getSocket(), response4.c_str(), response4.size(), 0);
-			channel->SendMsg(user, response4);
-			user->setChannel("");
 			return;
 		}
 	}
@@ -446,6 +444,7 @@ void	Server::CommandMODE2(User *user, char cha, int status, std::string supmode,
 
 void	Server::CommandMODE(User *user, std::string message)
 {
+	std::cout << message << '\n';
 	std::string mode;
 	std::string supmode;
 	std::string chanel;
@@ -468,10 +467,8 @@ void	Server::CommandMODE(User *user, std::string message)
 	int i = -1;
 	int status = 0;
 	size_t pos1 = 0;
-	size_t pos2 = supmode.find(' ');
-	// k o l 
-
-	// i t 
+	size_t pos2 = supmode.find(',');
+	std::cout << "----------" << supmode.length() << '\n';
 	while (++i < mode.size())
 	{
 		if (mode[i] == '+')
@@ -486,7 +483,7 @@ void	Server::CommandMODE(User *user, std::string message)
 		}
 		if (mode[i] == 'i' || mode[i] == 't' || mode[i] == 'k' || mode[i] == 'o' || mode[i] == 'l')
 		{
-			if (mode[i] == 'i' || mode[i] == 't')
+			if (supmode.length() == 0 || mode[i] == 'i' || mode[i] == 't' || (status == 1 && mode[i] == 'l'))
 			{
 				CommandMODE2(user, mode[i], status, "", chanel);
 				continue;
@@ -494,13 +491,13 @@ void	Server::CommandMODE(User *user, std::string message)
 			if (pos2 == std::string::npos)
 				CommandMODE2(user, mode[i], status, supmode.substr(pos1), chanel);
 			else{
-				CommandMODE2(user, mode[i], status, supmode.substr(pos1, pos2), chanel);
+				CommandMODE2(user, mode[i], status, supmode.substr(pos1, pos2 - pos1), chanel);
 				pos1 = pos2 + 1;
+				pos2 = supmode.find(',', pos1);
 			}
 		}
 		else
 			continue;
-		size_t pos2 = supmode.find(',', pos1);
 	}
 }
 
@@ -650,4 +647,66 @@ void	Server::CommandKICK(User *user, std::string message)
 		std::string response = ":server 441 " + user->getNickname() + " " + username + " " + channel1->getName() + " :They aren't on that channel\r\n";
 		send(user->getSocket(), response.c_str(), response.size(), 0);
 	}
+}
+
+void	Server::CommandQUIT(User *user, std::string message)
+{
+	size_t Pos = message.find(':');
+	std::string mes = message.substr(Pos + 1);
+	message = message.substr(0, Pos - 1);
+	std::string chan = user->getChannel();
+	if (chan != "")
+	{
+		std::map<std::string, Channel*>::iterator it;
+		for (it = ChannelTab.begin(); it != ChannelTab.end(); ++it)
+		{
+			std::string name = it->first;
+			Channel* channel = it->second;
+			if (chan == name)
+			{
+				user->setChannel("");
+				std::string response1 = user->getID() + " QUIT " + " :" + mes + "\r\n";
+				send(user->getSocket(), response1.c_str(), response1.size(), 0);
+				channel->SendMsg(user, response1);
+				channel->DelUser(user);
+				if (channel->isEmpty() == true)
+				{
+					delete channel;
+					ChannelTab.erase(it);
+				}
+				std::map<int, User*>::iterator itt;
+				for (itt = UserTab.begin(); itt != UserTab.end(); ++itt)
+				{
+					User* userT = itt->second;
+					if (user->getNickname() == userT->getNickname())
+					{	
+						delete user;
+						UserTab.erase(itt);
+						return;
+					}
+
+				}
+				return;
+			}
+		}
+	}
+	else
+	{
+		std::string response1 = user->getID() + " QUIT " + " :" + mes + "\r\n";
+		send(user->getSocket(), response1.c_str(), response1.size(), 0);
+		std::map<int, User*>::iterator itt;
+		for (itt = UserTab.begin(); itt != UserTab.end(); ++itt)
+		{
+			User* userT = itt->second;
+			if (user->getNickname() == userT->getNickname())
+			{	
+				delete user;
+				UserTab.erase(itt);
+				return;
+			}
+
+		}
+		
+	}
+	return;
 }

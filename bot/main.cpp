@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kylian <kylian@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 15:28:17 by kylian            #+#    #+#             */
-/*   Updated: 2023/11/22 16:28:11 by kylian           ###   ########.fr       */
+/*   Updated: 2023/11/23 13:51:55 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,12 +83,16 @@ int main(int argc, char **argv)
 
 	bytes = recv(sock, buffer, sizeof(buffer), 0);
 	buffer[bytes] = '\0';
-	if (std::strcmp (buffer, "CAP * LS :sasl\r\n") != 0)
+	if (std::strcmp (buffer, "CAP * LS :\r\n") != 0)
 	{
 		std::cerr << "Error\nsocket binding to failed." << '\n';
-		close(sock);
+		close(sock); //message de deconnection a renvoyer au server.
 		return 1;
 	}
+	bytes = recv(sock, buffer, sizeof(buffer), 0);
+	buffer[bytes] = '\0';
+	if (std::strcmp(buffer, ))
+	
 	bytes = recv(sock, buffer, sizeof(buffer), 0);
 	buffer[bytes] = '\0';
 	/*if (buffer != "CAP * LS :sasl\r\n")

@@ -20,5 +20,4 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	Server serv(argv[1], argv[2]);
-	
 }
