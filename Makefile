@@ -9,7 +9,7 @@ SRCS	=	src/main.cpp \
 			src/CmdServer.cpp \
 			src/mode.cpp \
 
-SRCSBOTE 	=	bote/main.cpp \
+SRCSBOTE 	=	bot/main.cpp \
 
 OBJ =	${SRCS:.cpp=.o}
 
