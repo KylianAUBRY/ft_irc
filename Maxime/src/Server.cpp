@@ -112,27 +112,42 @@ bool Server::Server_loop()
 	}
 	close(this->SServer.fd);
 	delete poll_fds;
+	return true;
 }
 
 void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 {
+	std::string message2;
 	if (client_fds[num].revents & POLLIN)
 	{
-		char buffer[1024];
-		ssize_t bytesRead = recv(client_fds[num].fd, buffer, sizeof(buffer), 0);
-		if (bytesRead > 0)
+		while (1)
 		{
-			std::string message(buffer, bytesRead);
-			std::cout << user->getUsername() << " command : " << message << std::endl;
-			
-			size_t end = message.find("\r\n", 0);
-			size_t pos = 0;
-			while (end != std::string::npos)
+			char buffer[255];
+			ssize_t bytesRead = recv(client_fds[num].fd, buffer, sizeof(buffer), 0);
+			if (bytesRead > 0)
 			{
-				std::string firstCommand = message.substr(pos, end + 2 - pos);
-				pos = end + 2;
-				FindCommand(user, firstCommand);
-				end = message.find("\r\n", pos);
+				std::string message1(buffer, bytesRead);
+				message2 += message1;
+				size_t end = message2.find("\r\n", 0);
+				size_t pos = 0;
+				if (end != std::string::npos)
+				{
+					//std::cout << user->getUsername() << " command recu entierement : " << message2;
+					while (end != std::string::npos)
+					{
+						std::string firstCommand = message2.substr(pos, end + 2 - pos);
+						pos = end + 2;
+						FindCommand(user, firstCommand);
+						end = message2.find("\r\n", pos);
+					}
+					message2 = "";
+					return ;
+				}
+				else
+				{
+					//std::cout << "non recus entierement "<< message2 << '\n';
+					continue;
+				}
 			}
 		}
 	}

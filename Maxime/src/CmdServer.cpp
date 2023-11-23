@@ -468,6 +468,7 @@ void	Server::CommandMODE(User *user, std::string message)
 	size_t pos1 = 0;
 	size_t pos2 = supmode.find(',');
 	// k o l 
+
 	// i t 
 	while (++i < mode.size())
 	{
@@ -481,7 +482,7 @@ void	Server::CommandMODE(User *user, std::string message)
 			status = 1;
 			continue;
 		}
-		else if (mode[i] == 'i' || mode[i] == 't' || mode[i] == 'k' || mode[i] == 'o' || mode[i] == 'l')
+		if (mode[i] == 'i' || mode[i] == 't' || mode[i] == 'k' || mode[i] == 'o' || mode[i] == 'l')
 		{
 			if (mode[i] == 'i' || mode[i] == 't')
 			{
@@ -496,6 +497,8 @@ void	Server::CommandMODE(User *user, std::string message)
 				pos2 = supmode.find(',', pos1);
 			}
 		}
+		else
+			continue;
 	}
 }
 
