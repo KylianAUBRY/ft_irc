@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 14:40:59 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/21 13:02:16 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/23 19:24:44 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 				size_t pos = 0;
 				if (end != std::string::npos)
 				{
-					//std::cout << user->getUsername() << " command recu entierement : " << message2;
+					std::cout << user->getUsername() << " command recu entierement : " << message2;
 					while (end != std::string::npos)
 					{
 						std::string firstCommand = message2.substr(pos, end + 2 - pos);
@@ -207,7 +207,9 @@ void	Server::FindCommand(User *user, std::string command)
 	if (command.substr(0, pos1) == "QUIT")
 	{
 		CommandQUIT(user, command.substr(pos1 + 1));
+		return 1;
 	}
+	return 0;
 }
 
 Server::Server(std::string const &port, std::string const &password) : _password(password)

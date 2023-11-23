@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 14:31:57 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/17 15:23:16 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/23 19:31:06 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ class Server
 		std::map<std::string, Channel*> ChannelTab;
 		
 		void	HandleMessage(User *user, int num, std::vector<pollfd> client_fds);
-		void	FindCommand(User *user, std::string command);
+		int		FindCommand(User *user, std::string command);
 		void	ConnectClient();
 		bool 	Server_start();
 		bool	Server_loop();
@@ -71,6 +71,7 @@ class Server
 		void 	ModeT(User *user, Channel *channel, int i);
 		void 	ModeL(User *user, Channel *channel, std::string message, int i);
 
+		void	timeOut(User *user);
 		void	SendMessage(User *user, Channel *channel, std::string mes);
 		Channel	*FindChannel(std::string search);
 		static void	handle_signal(int signal);

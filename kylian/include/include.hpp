@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 13:59:59 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/15 13:57:05 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/23 14:56:15 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,9 @@
 # include <limits>
 # include <iterator>
 # include <fstream>
+# include <cstring>
+# include <netdb.h>
 # include <unistd.h>
 # include <netinet/in.h>
-# include<sys/socket.h>
-# include<sys/types.h>
+# include <sys/socket.h>
+# include <sys/types.h>

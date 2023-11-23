@@ -6,11 +6,26 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 15:28:17 by kylian            #+#    #+#             */
-/*   Updated: 2023/11/23 13:51:55 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/23 17:17:25 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/include.hpp"
+#include "../kylian/include/include.hpp"
+
+int Stop;
+
+void	handle_signal(int signal)
+{
+	if (signal == SIGINT)
+		Stop = 1;
+}
+
+void cleanupFunction()
+{
+	std::cout << "salut" << '\n';
+    /*send(sock, "QUIT :leaving\r\n", 16, 0);
+    close(sock);*/
+}
 
 int ft_chr_port(std::string port)
 {
@@ -37,6 +52,9 @@ int ft_chr_port(std::string port)
 
 int main(int argc, char **argv)
 {
+	Stop = 0;
+	atexit(cleanupFunction);
+	std::signal(SIGINT, handle_signal);
 	if (argc != 4)
 	{
 		std::cerr << "./botirc <address> <port> <password>" << '\n';
@@ -59,7 +77,7 @@ int main(int argc, char **argv)
     if (getaddrinfo(argv[1], argv[2], &hints, &result) != 0)
 	{
     	std::cerr << "Error\nInvalide ip." << '\n';
-        close(sock);
+		close(sock);
         return 1;
     }
     // Copie de l'adresse IP résolue dans la structure sockaddr_in
@@ -74,8 +92,8 @@ int main(int argc, char **argv)
         close(sock);
         return -1;
     }
-	std::string capLs = "CAP LS\nPASS " + std::string (argv[3]) + "\r\n";
-	std::string nick = "NICK capitalsBote\nUSER capitalsBote capitalsBote localhost :capitalsBote\r\n";
+	std::string capLs = "CAP LS\r\n";
+	std::string nick = "NICK capitalsbot\r\nUSER capitalsbot capitalsbot localhost :capitalsbot\r\n";
     std::string capEnd = "CAP END\r\n";
     send(sock, capLs.c_str(), capLs.size(), 0);
 	char buffer[4096];
@@ -86,31 +104,74 @@ int main(int argc, char **argv)
 	if (std::strcmp (buffer, "CAP * LS :\r\n") != 0)
 	{
 		std::cerr << "Error\nsocket binding to failed." << '\n';
-		close(sock); //message de deconnection a renvoyer au server.
-		return 1;
-	}
-	bytes = recv(sock, buffer, sizeof(buffer), 0);
-	buffer[bytes] = '\0';
-	if (std::strcmp(buffer, ))
-	
-	bytes = recv(sock, buffer, sizeof(buffer), 0);
-	buffer[bytes] = '\0';
-	/*if (buffer != "CAP * LS :sasl\r\n")
-	{
-		std::cerr << "Error\nsocket binding to failed." << '\n';
+		send(sock, "QUIT :leaving\r\n", 16, 0);
 		close(sock);
 		return 1;
-	}*/
-	std::cout << buffer << '\n';
-	return  0; 
+	}
+	capLs = "PASS " + std::string (argv[3]) + "\r\n";
+	send(sock, capLs.c_str(), capLs.size(), 0);
+	bytes = recv(sock, buffer, sizeof(buffer), 0);
+	buffer[bytes] = '\0';
+	if (std::strcmp(buffer, ":server 464  :password incorrect\r\n") == 0)
+	{
+		std::cerr << "Error\nPassword incorrect" << '\n';
+		send(sock, "QUIT :leaving\r\n", 16, 0);
+		close(sock);
+		return 1;
+	}
+	else if (std::strcmp(buffer, ":localhost 001  :Password Correct\r\n") != 0)
+	{
+		std::cerr << "Error\nError when receiving packet password."	<< '\n';
+		send(sock, "QUIT :leaving\r\n", 16, 0);
+		close(sock);
+		return 1;
+	}
 	send(sock, nick.c_str(), nick.size(), 0);
-    send(sock, capEnd.c_str(), capEnd.size(), 0);
-	//send(sock, capLs.c_str(), capLs.size(), 0);
-
-    // Reste du code (envoi de messages, lecture des messages, etc.)
-	while (1)
-		;
-    // Fermeture du socket
+	send(sock, capEnd.c_str(), capEnd.size(), 0);
+	bytes = recv(sock, buffer, sizeof(buffer), 0);
+	buffer[bytes] = '\0';
+	if (std::strstr (buffer, ":localhost 001 capitalsbot :Welcome to the IRC server\r\n") == NULL)
+	{
+		std::cerr << "Error\nsocket binding to failed. Welcome message." << '\n';
+		send(sock, "QUIT :leaving\r\n", 16, 0);
+		close(sock);
+		return 1;
+	}
+	if (std::strstr(buffer, "CAP * LS :\r\n") == NULL)
+	{
+		bytes = recv(sock, buffer, sizeof(buffer), 0);
+		buffer[bytes] = '\0';
+		if (std::strcmp (buffer, "CAP * LS :\r\n") != 0)
+		{
+			std::cerr << "Error\nsocket binding to failed. CAP LS." << '\n';
+			send(sock, "QUIT :leaving\r\n", 16, 0);
+			close(sock);
+			return 1;
+		}
+	}
+	send(sock, "JOIN #pays\r\n", 13, 0);
+	bytes = recv(sock, buffer, sizeof(buffer), 0);
+	buffer[bytes] = '\0';
+	if (std::strstr(buffer, "JOIN #pays\r\n") == NULL)
+	{
+		std::cout << buffer << '\n';
+		std::cerr << "Error\nimpossible to connect to Chanel : #pays." << '\n';
+		send(sock, "QUIT :leaving\r\n", 16, 0);
+		close(sock);
+		return 1;
+	}
+	pollfd *fds = new pollfd();
+	poll(fds, 1, 1000000);
+	while (Stop == 0)
+	{
+		if (fds->revents & POLLIN)
+			break ;
+		bytes = recv(sock, buffer, sizeof(buffer), 0);
+		buffer[bytes] = '\0';
+		std::cout << buffer << '\n';
+	}
+	delete(fds);
+	send(sock, "QUIT :leaving\r\n", 16, 0);
     close(sock);
+	return 0;
 }
-

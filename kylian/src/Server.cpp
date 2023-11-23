@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 14:40:59 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/21 13:02:16 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/23 19:38:41 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,45 +115,102 @@ bool Server::Server_loop()
 	return true;
 }
 
-void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
+void	Server::timeOut(User *user)
 {
-	std::string message2;
-	if (client_fds[num].revents & POLLIN)
+	std::string chan = user->getChannel();
+	if (chan != "")
 	{
-		while (1)
+		std::map<std::string, Channel*>::iterator it;
+		for (it = ChannelTab.begin(); it != ChannelTab.end(); ++it)
 		{
-			char buffer[255];
-			ssize_t bytesRead = recv(client_fds[num].fd, buffer, sizeof(buffer), 0);
-			if (bytesRead > 0)
+			std::string name = it->first;
+			Channel* channel = it->second;
+			if (chan == name)
 			{
-				std::string message1(buffer, bytesRead);
-				message2 += message1;
-				size_t end = message2.find("\r\n", 0);
-				size_t pos = 0;
-				if (end != std::string::npos)
+				std::string response1 = user->getID() + " QUIT " + " :" + "time out" + "\r\n";
+				channel->SendMsg(user, response1);
+				channel->DelUser(user);
+				if (channel->isEmpty() == true)
 				{
-					//std::cout << user->getUsername() << " command recu entierement : " << message2;
-					while (end != std::string::npos)
-					{
-						std::string firstCommand = message2.substr(pos, end + 2 - pos);
-						pos = end + 2;
-						FindCommand(user, firstCommand);
-						end = message2.find("\r\n", pos);
+					delete channel;
+					ChannelTab.erase(it);
+				}
+				std::map<int, User*>::iterator itt;
+				for (itt = UserTab.begin(); itt != UserTab.end(); ++itt)
+				{
+					User* userT = itt->second;
+					if (user->getNickname() == userT->getNickname())
+					{	
+						delete user;
+						user = NULL;
+						UserTab.erase(itt);
+						this->numConnection --;
+						return;
 					}
-					message2 = "";
-					return ;
 				}
-				else
-				{
-					//std::cout << "non recus entierement "<< message2 << '\n';
-					continue;
-				}
+			}
+		}
+	}
+	else
+	{
+		std::map<int, User*>::iterator itt;
+		for (itt = UserTab.begin(); itt != UserTab.end(); ++itt)
+		{
+			User* userT = itt->second;
+			if (user->getNickname() == userT->getNickname())
+			{	
+				delete user;
+				user = NULL;
+				UserTab.erase(itt);
+				this->numConnection --;
+				return;
 			}
 		}
 	}
 }
 
-void	Server::FindCommand(User *user, std::string command)
+void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
+{
+	if (client_fds[num].revents & POLLIN)
+	{
+		char buffer[255];
+		ssize_t bytesRead = recv(client_fds[num].fd, buffer, sizeof(buffer) - 1, 0);
+		buffer[bytesRead] = '\0';
+		if (bytesRead == 0)
+			return timeOut(user);
+		if (bytesRead > 0)
+		{
+			std::string message1(buffer, bytesRead +1);
+			user->joinbuffCommand(message1);
+			size_t end;
+			if (user->getbuffCommand() == "")
+				end = std::string::npos;
+			else
+				end = user->getbuffCommand().find("\r\n", 0);
+			size_t pos = 0;
+			if (end != std::string::npos)
+			{
+				std::cout << user->getUsername() << " command recu entierement : " << user->getbuffCommand();
+				while (end != std::string::npos)
+				{
+					std::string firstCommand = user->getbuffCommand().substr(pos, end + 2 - pos);
+					pos = end + 2;
+					if (FindCommand(user, firstCommand) == 1)
+						return ;
+					end = user->getbuffCommand().find("\r\n", pos);
+				}
+				user->setbuffCommand("");
+				return ;
+			}
+			else
+			{
+				//std::cout << "non recus entierement "<< user->getbuffCommand() << '\n';
+			}
+		}
+	}
+}
+
+int		Server::FindCommand(User *user, std::string command)
 {
 	static int passOK = 1;
 	size_t found = command.find("\r\n");
@@ -207,7 +264,9 @@ void	Server::FindCommand(User *user, std::string command)
 	if (command.substr(0, pos1) == "QUIT")
 	{
 		CommandQUIT(user, command.substr(pos1 + 1));
+		return 1;
 	}
+	return 0;
 }
 
 Server::Server(std::string const &port, std::string const &password) : _password(password)

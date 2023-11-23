@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 12:09:23 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/23 14:12:21 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/23 19:38:27 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,9 @@ void	Server::CommandNICK(User *user, std::string message)
 				User* userT = it->second;
 				if (message == userT->getNickname())
 				{
-				usernameExists = true;
-				break;
-			}
+					usernameExists = true;
+					break;
+				}
 			}
 			if (usernameExists)
 				message = message + "_";
@@ -681,10 +681,11 @@ void	Server::CommandQUIT(User *user, std::string message)
 					if (user->getNickname() == userT->getNickname())
 					{	
 						delete user;
+						user = NULL;
 						UserTab.erase(itt);
+						this->numConnection --;
 						return;
 					}
-
 				}
 				return;
 			}
@@ -701,10 +702,11 @@ void	Server::CommandQUIT(User *user, std::string message)
 			if (user->getNickname() == userT->getNickname())
 			{	
 				delete user;
+				user = NULL;
 				UserTab.erase(itt);
+				this->numConnection --;
 				return;
 			}
-
 		}
 		
 	}

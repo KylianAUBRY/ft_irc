@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 15:42:01 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/15 12:11:43 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/23 18:58:58 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 User::User(int socket) : _socket(socket)
 {
+	_buffCommand = "";
 	_username = "";
 	_channel = "";
 	_nickname = "";
@@ -85,4 +86,20 @@ void User::setChannel(std::string channel)
 void User::setGetNick()
 {
 	this->_getNick = true;
+}
+
+
+std::string User::getbuffCommand()
+{
+	return this->_buffCommand;
+}
+
+void User::setbuffCommand(std::string command)
+{
+	this->_buffCommand = command;
+}
+
+void User::joinbuffCommand(std::string command)
+{
+	this->_buffCommand += command;
 }
