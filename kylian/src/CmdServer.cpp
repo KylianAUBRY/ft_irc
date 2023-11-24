@@ -28,7 +28,7 @@ int	Server::CommandPASS(User *user, std::string pass)
 	}	
 	else
 	{
-		std::string response2 = ":localhost 001 "+ user->getNickname() +" :Password Correct\r\n";
+		std::string response2 = ":server 001 "+ user->getNickname() +" :Password Correct\r\n";
 		send(user->getSocket(), response2.c_str(), response2.size(), 0);
 		return (0);
 	}
@@ -92,7 +92,7 @@ void	Server::CommandUSER(User *user, std::string message, int passOK)
 		iss >> username >> unused >> hostname;
 		user->setUsername(username);
 		user->setHostname(hostname);
-		std::string response4 = ":localhost 001 " + user->getNickname() +" :Welcome to the IRC server\r\n";
+		std::string response4 = ":server 001 " + user->getNickname() +" :Welcome to the IRC server\r\n";
 		send(user->getSocket(), response4.c_str(), response4.size(), 0);
 	}
 	else if (passOK == 1)
@@ -376,7 +376,6 @@ void	Server::CommandPRIVMSG(User *user, std::string message)
 		if (message == userT->getNickname())
 		{
 			std::string response1 = user->getID() + " PRIVMSG " + userT->getNickname() + " :" + mes + "\r\n";
-			std::cout << "envoie " << response1 << "\n";
 			send(userT->getSocket(), response1.c_str(), response1.size(), 0);
 			return;
 		}
@@ -442,7 +441,6 @@ void	Server::CommandMODE2(User *user, char cha, int status, std::string supmode,
 
 void	Server::CommandMODE(User *user, std::string message)
 {
-	std::cout << message << '\n';
 	std::string mode;
 	std::string supmode;
 	std::string chanel;
@@ -466,7 +464,6 @@ void	Server::CommandMODE(User *user, std::string message)
 	int status = 0;
 	size_t pos1 = 0;
 	size_t pos2 = supmode.find(',');
-	std::cout << "----------" << supmode.length() << '\n';
 	while (++i < mode.size())
 	{
 		if (mode[i] == '+')
@@ -705,4 +702,10 @@ void	Server::CommandQUIT(User *user, std::string message)
 		
 	}
 	return;
+}
+
+void	Server::CommandPING(User *user, std::string message)
+{
+	std::string response1 = user->getID() + " PONG " + " server\r\n";
+	send(user->getSocket(), response1.c_str(), response1.size(), 0);
 }

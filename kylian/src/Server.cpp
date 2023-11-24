@@ -64,7 +64,7 @@ void	Server::ConnectClient()
 			close(this->SServer.fd);
 			return ;
 		}
-		std::cout << "New client connected: " << this->SClient.fd << std::endl;
+		//std::cout << "New client connected: " << this->SClient.fd << std::endl;
 		try
 		{
 			User *user = new User(this->SClient.fd);
@@ -112,6 +112,18 @@ bool Server::Server_loop()
 			int num = it->first;
 			User *user = it->second;
 			CommandQUIT(user, ":Stop Server");
+		}
+	}
+	if (ChannelTab.size() != 0)
+	{\
+		std::map<std::string, Channel*> ChannelTab2 = ChannelTab;
+		std::map<std::string, Channel*>::iterator itt;
+		for (itt = ChannelTab2.begin(); itt != ChannelTab2.end(); ++itt)
+		{
+			std::string name = itt->first;
+			Channel *channel = itt->second;
+			delete channel;
+			ChannelTab2.erase(itt);
 		}
 	}
 	close(this->SServer.fd);
@@ -200,7 +212,7 @@ void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 			size_t pos = 0;
 			if (end != std::string::npos)
 			{
-				std::cout << user->getUsername() << " command recu entierement : " << user->getbuffCommand();
+				//std::cout << user->getUsername() << " command recu entierement : " << user->getbuffCommand();
 				while (end != std::string::npos)
 				{
 					std::string firstCommand = user->getbuffCommand().substr(pos, end + 2 - pos);
@@ -214,7 +226,7 @@ void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 			}
 			else
 			{
-				//std::cout << "non recus entierement "<< user->getbuffCommand() << '\n';
+				//std::cout << "non recu entierement "<< user->getbuffCommand() << '\n';
 			}
 		}
 	}
@@ -249,6 +261,8 @@ int		Server::FindCommand(User *user, std::string command)
 		CommandINVITE(user, command.substr(pos1 + 1));
 	else if (command.substr(0, pos1) == "KICK")
 		CommandKICK(user, command.substr(pos1 + 1));
+	else if (command.substr(0, pos1) == "PING")
+		CommandPING(user, command.substr(pos1 + 1));
 	else if (command.substr(0, pos1) == "QUIT")
 	{
 		CommandQUIT(user, command.substr(pos1 + 1));

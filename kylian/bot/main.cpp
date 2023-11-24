@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../kylian/include/include.hpp"
+#include "../include/include.hpp"
 
 int Stop;
 
@@ -311,7 +311,7 @@ int main(int argc, char **argv)
 		close(sock);
 		return 1;
 	}
-	else if (std::strcmp(buffer, ":localhost 001  :Password Correct\r\n") != 0)
+	else if (std::strcmp(buffer, ":server 001  :Password Correct\r\n") != 0)
 	{
 		std::cerr << "Error\nError when receiving packet password."	<< '\n';
 		send(sock, "QUIT :leaving\r\n", 16, 0);
@@ -322,7 +322,7 @@ int main(int argc, char **argv)
 	send(sock, capEnd.c_str(), capEnd.size(), 0);
 	bytes = recv(sock, buffer, sizeof(buffer), 0);
 	buffer[bytes] = '\0';
-	if (std::strstr (buffer, ":localhost 001 capitalsbot :Welcome to the IRC server\r\n") == NULL)
+	if (std::strstr (buffer, ":server 001 capitalsbot :Welcome to the IRC server\r\n") == NULL)
 	{
 		std::cerr << "Error\nsocket binding to failed. Welcome message." << '\n';
 		send(sock, "QUIT :leaving\r\n", 16, 0);
