@@ -29,7 +29,7 @@ void cleanupFunction()
 
 void	ft_charg_map(std::map<std::string, std::string> &map)
 {
-	/*map["kaboul"] = "afghanistan";
+	map["kaboul"] = "afghanistan";
 	map["pretoria"] = "afrique du sud";
 	map["tirana"] = "albanie";
 	map["alger"] = "algerie";
@@ -225,9 +225,7 @@ void	ft_charg_map(std::map<std::string, std::string> &map)
 	map["hanoi"] = "vietnam";
 	map["sanaa"] = "yemen";
 	map["lusaka"] = "zambie";
-	map["harare"] = "zimbabwe";*/
-
-	map["paris"] = "france";
+	map["harare"] = "zimbabwe";
 }
 
 int ft_chr_port(std::string port)
