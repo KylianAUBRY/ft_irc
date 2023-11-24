@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 12:09:23 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/24 15:58:04 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/24 17:45:14 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	Server::CommandNICK(User *user, std::string message)
 			if (usernameExists)
 				message = message + "_";
 		} while (usernameExists);
-		user->User::setNickname(message);
+			user->User::setNickname(message);
 		user->setGetNick();
 	}
 	else
@@ -341,9 +341,7 @@ void	Server::CommandJOIN(User *user, std::string message)
 	}
 	std::map<std::string, std::string>::iterator it;
 	for (it = map.begin(); it != map.end(); ++it)
-	{
 		CommandJOIN2(user, it->first, it->second);
-	}
 }
 
 void	Server::CommandNAMES(User *user, Channel *channel)
@@ -377,7 +375,6 @@ void	Server::CommandPRIVMSG(User *user, std::string message)
 		User* userT = itt->second;
 		if (message == userT->getNickname())
 		{
-			
 			std::string response1 = user->getID() + " PRIVMSG " + userT->getNickname() + " :" + mes + "\r\n";
 			std::cout << "envoie " << response1 << "\n";
 			send(userT->getSocket(), response1.c_str(), response1.size(), 0);
@@ -497,8 +494,6 @@ void	Server::CommandMODE(User *user, std::string message)
 				pos2 = supmode.find(',', pos1);
 			}
 		}
-		else
-			continue;
 	}
 }
 
@@ -511,9 +506,7 @@ Channel	*Server::FindChannel(std::string search)
 		std::string name = it->first;
 		Channel* channel = it->second;
 		if (search == name)
-		{
 			return(channel);
-		}
 	}
 	return(NULL);
 }

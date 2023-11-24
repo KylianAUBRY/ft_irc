@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 15:03:01 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/16 18:36:15 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/24 17:44:02 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,7 @@ void  Channel::DelUser(User *user)
 {
 	std::map<User*, int>::iterator it = UserBook.find(user);
 	if (it != UserBook.end())
-	{
 		UserBook.erase(it);
-	}
 }
 
 std::string Channel::getStringUser(std::string name)
@@ -170,9 +168,7 @@ void Channel::changeOp(std::string nickname, int op)
 	for (it = UserBook.begin(); it != UserBook.end(); ++it)
 	{
 		if (it->first->getNickname() == nickname)
-		{
 			it->second = op;
-		}
 	}
 }
 
@@ -186,9 +182,7 @@ int Channel::getNbUser()
 	int i = 0;
 	std::map<User*, int>::iterator it;
 	for (it = UserBook.begin(); it != UserBook.end(); ++it)
-	{
 		i++;
-	}
 	return (i);
 }
 

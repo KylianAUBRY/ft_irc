@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 15:28:17 by kylian            #+#    #+#             */
-/*   Updated: 2023/11/24 14:40:14 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/24 17:46:47 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,6 @@ void	handle_signal(int signal)
 {
 	if (signal == SIGINT)
 		Stop = 1;
-}
-
-void cleanupFunction()
-{
-//	std::cout << "salut" << '\n';
-    /*send(sock, "QUIT :leaving\r\n", 16, 0);
-    close(sock);*/
 }
 
 void	ft_charg_map(std::map<std::string, std::string> &map)
@@ -254,7 +247,6 @@ int ft_chr_port(std::string port)
 int main(int argc, char **argv)
 {
 	Stop = 0;
-	atexit(cleanupFunction);
 	std::signal(SIGINT, handle_signal);
 	if (argc != 4)
 	{

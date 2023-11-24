@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 15:42:01 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/24 15:52:36 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/24 17:46:00 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,6 @@ void User::setGetNick()
 {
 	this->_getNick = true;
 }
-
 
 std::string User::getbuffCommand()
 {

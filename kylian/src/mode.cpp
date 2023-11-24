@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/17 14:23:04 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/23 14:20:17 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/24 17:45:43 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ void 	Server::ModeI(User *user, Channel *channel, int i)
 		std::string response = user->getID() + " MODE " + channel->getName() + " +i " + "\r\n";
 		send(user->getSocket(), response.c_str(), response.size(), 0);
 		channel->SendMsg(user ,response);
-		
 	}
 	else if (channel->getMode('i') == true && i == 1)
 	{
