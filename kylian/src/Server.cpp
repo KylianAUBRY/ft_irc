@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 14:40:59 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/23 19:38:41 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/24 16:01:27 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,14 @@ void	Server::ConnectClient()
 		try
 		{
 			User *user = new User(this->SClient.fd);
+			char clientIP[INET_ADDRSTRLEN];
+            inet_ntop(AF_INET, &(this->SClient.info.sin_addr), clientIP, INET_ADDRSTRLEN);
+			user->setIp(clientIP);
 			UserTab[this->numConnection] = user;
 			client_fds[this->numConnection + 1].fd = this->SClient.fd;
 			client_fds[this->numConnection + 1].events = POLLIN | POLLOUT;
 			this->numConnection++;
+			
 		}
 		catch (const std::bad_alloc& e)
 		{
@@ -177,7 +181,13 @@ void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 		ssize_t bytesRead = recv(client_fds[num].fd, buffer, sizeof(buffer) - 1, 0);
 		buffer[bytesRead] = '\0';
 		if (bytesRead == 0)
-			return timeOut(user);
+		{
+			user->incrementisDown();
+			if (user->getisDown() >= 100)
+				return timeOut(user);
+		}
+		else
+			user->setisDown(0);
 		if (bytesRead > 0)
 		{
 			std::string message1(buffer, bytesRead +1);
@@ -218,50 +228,28 @@ int		Server::FindCommand(User *user, std::string command)
 	size_t pos1 = command.find(' ');
 	size_t pos2 = command.find(' ', pos1 + 1);
 	if (command.substr(0, pos1) == "CAP")
-	{
 		CommandCAP(user);
-	}
-	if (command.substr(0, pos1) == "PASS")
-	{
+	else if (command.substr(0, pos1) == "PASS")
 		passOK = CommandPASS(user, command.substr(pos1 + 1));
-	}
-	if (command.substr(0, pos1) == "NICK")
-	{
+	else if (command.substr(0, pos1) == "NICK")
 		CommandNICK(user, command.substr(pos1 + 1, pos2));
-	}
-	if (command.substr(0, pos1) == "USER")
-	{
+	else if (command.substr(0, pos1) == "USER")
 		CommandUSER(user, command.substr(pos1 + 1), passOK);
-	}
-	if (command.substr(0, pos1) == "JOIN")
-	{
+	else if (command.substr(0, pos1) == "JOIN")
 		CommandJOIN(user, command.substr(pos1 + 1));
-	}
-	if (command.substr(0, pos1) == "PRIVMSG")
-	{
+	else if (command.substr(0, pos1) == "PRIVMSG")
 		CommandPRIVMSG(user, command.substr(pos1 + 1));
-	}
-	if (command.substr(0, pos1) == "PART")
-	{
+	else if (command.substr(0, pos1) == "PART")
 		CommandPART(user, command.substr(pos1 + 1, pos2));
-	}
-	if (command.substr(0, pos1) == "MODE")
-	{
+	else if (command.substr(0, pos1) == "MODE")
 		CommandMODE(user, command.substr(pos1 + 1));
-	}
-	if (command.substr(0, pos1) == "TOPIC")
-	{
+	else if (command.substr(0, pos1) == "TOPIC")
 		CommandTOPIC(user, command.substr(pos1 + 1));
-	}
-	if (command.substr(0, pos1) == "INVITE")
-	{
+	else if (command.substr(0, pos1) == "INVITE")
 		CommandINVITE(user, command.substr(pos1 + 1));
-	}
-	if (command.substr(0, pos1) == "KICK")
-	{
+	else if (command.substr(0, pos1) == "KICK")
 		CommandKICK(user, command.substr(pos1 + 1));
-	}
-	if (command.substr(0, pos1) == "QUIT")
+	else if (command.substr(0, pos1) == "QUIT")
 	{
 		CommandQUIT(user, command.substr(pos1 + 1));
 		return 1;

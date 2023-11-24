@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 15:42:01 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/23 18:58:58 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/24 15:52:36 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 User::User(int socket) : _socket(socket)
 {
+	this->_isDown = 0;
 	_buffCommand = "";
 	_username = "";
 	_channel = "";
@@ -59,7 +60,7 @@ bool User::getGetNick(void)
 
 std::string User::getID(void)
 {
-	std::string ID = ":" + this->_nickname + "!" + this->_username + "@" + this->_hostname;
+	std::string ID = ":" + this->_nickname + "!" + this->_username + "@" + this->_ip;
 	return (ID);
 }
 
@@ -102,4 +103,29 @@ void User::setbuffCommand(std::string command)
 void User::joinbuffCommand(std::string command)
 {
 	this->_buffCommand += command;
+}
+
+int User::getisDown(void)
+{
+	return this->_isDown;
+}
+
+void User::setisDown(int down)
+{
+	this->_isDown = down;
+}
+
+void User::incrementisDown()
+{
+	this->_isDown ++;
+}
+
+std::string User::getIp(void)
+{
+	return this->_ip;
+}
+
+void User::setIp(std::string ip)
+{
+	this->_ip = ip;
 }

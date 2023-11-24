@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 12:09:23 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/23 19:38:27 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/24 15:58:04 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -378,7 +378,8 @@ void	Server::CommandPRIVMSG(User *user, std::string message)
 		if (message == userT->getNickname())
 		{
 			
-			std::string response1 = user->getID() + " PRIVMSG " + userT->getNickname() + " " + mes + "\r\n";
+			std::string response1 = user->getID() + " PRIVMSG " + userT->getNickname() + " :" + mes + "\r\n";
+			std::cout << "envoie " << response1 << "\n";
 			send(userT->getSocket(), response1.c_str(), response1.size(), 0);
 			return;
 		}

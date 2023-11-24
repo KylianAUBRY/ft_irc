@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kylian <kylian@student.42.fr>              +#+  +:+       +#+        */
+/*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 15:28:17 by kylian            #+#    #+#             */
-/*   Updated: 2023/11/24 03:42:34 by kylian           ###   ########.fr       */
+/*   Updated: 2023/11/24 14:40:14 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	ft_charg_map(std::map<std::string, std::string> &map)
 	map["thimphou"] = "bhoutan";
 	map["minsk"] = "bielorussie";
 	map["naypyidaw"] = "birmanie";
-	map["sucre / la paz"] = "bolivie";
+	map["la paz"] = "bolivie";
 	map["sarajevo"] = "bosnie-herzegovine";
 	map["gaborone"] = "botswana";
 	map["brasilia"] = "bresil";
@@ -281,7 +281,6 @@ int main(int argc, char **argv)
 		close(sock);
         return 1;
     }
-    // Copie de l'adresse IP résolue dans la structure sockaddr_in
     struct sockaddr_in serverAddress;
     memcpy(&serverAddress.sin_addr, &((struct sockaddr_in*)result->ai_addr)->sin_addr, sizeof(struct in_addr));
     serverAddress.sin_family = AF_INET;
@@ -365,6 +364,7 @@ int main(int argc, char **argv)
 	ft_charg_map(map);
 	int size_pays = map.size();
 	int size_pays_find = 0;
+	int down = 0;
 	struct pollfd fds[1];
     fds[0].fd = sock;
     fds[0].events = POLLIN;
@@ -376,9 +376,16 @@ int main(int argc, char **argv)
 		buffer[bytes] = '\0';
 		if (bytes == 0)
 		{
-			close(sock);
-			return 0;
+			down ++;
+			if (down >= 100)
+			{
+				std::cerr << "Server irc close." << '\n';
+				close(sock);
+				return 0;
+			}
 		}
+		else
+			down = 0;
 		if (char *msg = std::strstr(buffer, " PRIVMSG #pays :"))
 		{
 			std::string searchKey = msg + 16;
@@ -406,8 +413,6 @@ int main(int argc, char **argv)
 			close(sock);
 			return 0;
 		}
-		else
-			std::cout << buffer << '\n';
 	}
 	send(sock, "QUIT :leaving\r\n", 16, 0);
     close(sock);
