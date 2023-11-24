@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
+/*   By: kylian <kylian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 15:28:17 by kylian            #+#    #+#             */
-/*   Updated: 2023/11/23 20:34:38 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/24 03:42:34 by kylian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,209 @@ void cleanupFunction()
 //	std::cout << "salut" << '\n';
     /*send(sock, "QUIT :leaving\r\n", 16, 0);
     close(sock);*/
+}
+
+void	ft_charg_map(std::map<std::string, std::string> &map)
+{
+	/*map["kaboul"] = "afghanistan";
+	map["pretoria"] = "afrique du sud";
+	map["tirana"] = "albanie";
+	map["alger"] = "algerie";
+	map["berlin"] = "allemagne";
+	map["andorre-la-vieille"] = "andorre";
+	map["luanda"] = "angola";
+	map["saint john\'s"] = "antigua-et-barbuda";
+	map["riyad"] = "arabie saoudite";
+	map["buenos aires"] = "argentine";
+	map["erevan"] = "armenie";
+	map["canberra"] = "australie";
+	map["vienne"] = "autriche";
+	map["bakou"] = "azerbaidjan";
+	map["nassau"] = "bahamas";
+	map["manama"] = "bahrein";
+	map["dacca"] = "bangladesh";
+	map["bridgetown"] = "barbade";
+	map["bruxelles"] = "belgique";
+	map["belmopan"] = "belize";
+	map["porto-novo"] = "benin";
+	map["thimphou"] = "bhoutan";
+	map["minsk"] = "bielorussie";
+	map["naypyidaw"] = "birmanie";
+	map["sucre / la paz"] = "bolivie";
+	map["sarajevo"] = "bosnie-herzegovine";
+	map["gaborone"] = "botswana";
+	map["brasilia"] = "bresil";
+	map["bandar seri begawan"] = "brunei";
+	map["sofia"] = "bulgarie";
+	map["ouagadougou"] = "burkina";
+	map["gitega"] = "burundi";
+	map["phnom penh"] = "cambodge";
+	map["yaounde"] = "cameroun";
+	map["ottawa"] = "canada";
+	map["praia"] = "cap-vert";
+	map["bangui"] = "centrafrique";
+	map["santiago"] = "chili";
+	map["pekin"] = "chine";
+	map["nicosie"] = "chypre";
+	map["bogota"] = "colombie";
+	map["moroni"] = "comores";
+	map["brazzaville"] = "congo";
+	map["kinshasa"] = "republique democratique du congo";
+	map["avarua"] = "iles cook";
+	map["pyongyang"] = "coree du nord";
+	map["seoul"] = "coree du sud";
+	map["san jose"] = "costa rica";
+	map["yamoussoukro"] = "côte d\'ivoire";
+	map["zagreb"] = "croatie";
+	map["la havane"] = "cuba";
+	map["copenhague"] = "danemark";
+	map["djibouti"] = "djibouti";
+	map["saint-domingue"] = "republique dominicaine";
+	map["roseau"] = "dominique";
+	map["le caire"] = "egypte";
+	map["abou dabi"] = "emirats arabes unis";
+	map["quito"] = "equateur";
+	map["asmara"] = "erythree";
+	map["madrid"] = "espagne";
+	map["tallinn"] = "estonie";
+	map["mbabane"] = "eswatini";
+	map["washington"] = "etats-unis";
+	map["addis abeba"] = "ethiopie";
+	map["suva"] = "fidji";
+	map["helsinki"] = "finlande";
+	map["paris"] = "france";
+	map["libreville"] = "gabon";
+	map["banjul"] = "gambie";
+	map["tbilissi"] = "georgie";
+	map["accra"] = "ghana";
+	map["athenes"] = "grece";
+	map["saint-georges"] = "grenade";
+	map["guatemala"] = "guatemala";
+	map["conakry"] = "guinee";
+	map["malabo"] = "guinee equatoriale";
+	map["bissao"] = "guinee-bissao";
+	map["georgetown"] = "guyana";
+	map["port-au-prince"] = "haiti";
+	map["tegucigalpa"] = "honduras";
+	map["budapest"] = "hongrie";
+	map["new delhi"] = "inde";
+	map["jakarta"] = "indonesie";
+	map["bagdad"] = "irak";
+	map["teheran"] = "iran";
+	map["dublin"] = "irlande";
+	map["reykjavik"] = "islande";
+	map["jerusalem"] = "israël";
+	map["rome"] = "italie";
+	map["kingston"] = "jamaique";
+	map["tokyo"] = "japon";
+	map["amman"] = "jordanie";
+	map["nour-soultan"] = "kazakhstan";
+	map["nairobi"] = "kenya";
+	map["bichkek"] = "kirghizstan";
+	map["bairiki"] = "kiribati";
+	map["pristina"] = "kosovo";
+	map["koweit"] = "koweit";
+	map["vientiane"] = "laos";
+	map["maseru"] = "lesotho";
+	map["riga"] = "lettonie";
+	map["beyrouth"] = "liban";
+	map["monrovia"] = "liberia";
+	map["tripoli"] = "libye";
+	map["vaduz"] = "liechtenstein";
+	map["vilnius"] = "lituanie";
+	map["luxembourg"] = "luxembourg";
+	map["skopje"] = "macedoine du nord";
+	map["antananarivo"] = "madagascar";
+	map["kuala lumpur"] = "malaisie";
+	map["lilongwe"] = "malawi";
+	map["male"] = "maldives";
+	map["bamako"] = "mali";
+	map["la valette"] = "malte";
+	map["rabat"] = "maroc";
+	map["delap-uliga-darrit"] = "iles marshall";
+	map["port-louis"] = "maurice";
+	map["nouakchott"] = "mauritanie";
+	map["mexico"] = "mexique";
+	map["palikir"] = "micronesie";
+	map["chisinau"] = "moldavie";
+	map["monaco"] = "monaco";
+	map["oulan-bator"] = "mongolie";
+	map["podgorica"] = "montenegro";
+	map["maputo"] = "mozambique";
+	map["windhoek"] = "namibie";
+	map["yaren"] = "nauru";
+	map["katmandou"] = "nepal";
+	map["managua"] = "nicaragua";
+	map["niamey"] = "niger";
+	map["abuja"] = "nigeria";
+	map["alofi"] = "niue";
+	map["oslo"] = "norvege";
+	map["wellington"] = "nouvelle-zelande";
+	map["mascate"] = "oman";
+	map["kampala"] = "ouganda";
+	map["tachkent"] = "ouzbekistan";
+	map["islamabad"] = "pakistan";
+	map["melekeok"] = "palaos";
+	map["panama"] = "panama";
+	map["port moresby"] = "papouasie-nouvelle-guinee";
+	map["assomption"] = "paraguay";
+	map["amsterdam"] = "pays-bas";
+	map["lima"] = "perou";
+	map["manille"] = "philippines";
+	map["varsovie"] = "pologne";
+	map["lisbonne"] = "portugal";
+	map["doha"] = "qatar";
+	map["bucarest"] = "roumanie";
+	map["londres"] = "royaume-uni";
+	map["moscou"] = "russie";
+	map["kigali"] = "rwanda";
+	map["basseterre"] = "saint-christophe-et-nieves";
+	map["castries"] = "sainte-lucie";
+	map["saint-marin"] = "saint-marin";
+	map["kingstown"] = "saint-vincent-et-les-grenadines";
+	map["honiara"] = "salomon";
+	map["san salvador"] = "salvador";
+	map["apia"] = "samoa";
+	map["sao tome"] = "sao tome-et-principe";
+	map["dakar"] = "senegal";
+	map["belgrade"] = "serbie";
+	map["victoria"] = "seychelles";
+	map["freetown"] = "sierra leone";
+	map["singapour"] = "singapour";
+	map["bratislava"] = "slovaquie";
+	map["ljubljana"] = "slovenie";
+	map["mogadiscio"] = "somalie";
+	map["khartoum"] = "soudan";
+	map["djouba"] = "soudan du sud";
+	map["sri jayewardenepura-kotte"] = "sri lanka";
+	map["stockholm"] = "suede";
+	map["berne"] = "suisse";
+	map["paramaribo"] = "suriname";
+	map["damas"] = "syrie";
+	map["douchanbe"] = "tadjikistan";
+	map["dodoma"] = "tanzanie";
+	map["ndjamena"] = "tchad";
+	map["prague"] = "tchequie";
+	map["bangkok"] = "thailande";
+	map["dili"] = "timor oriental";
+	map["lome"] = "togo";
+	map["nuku\'alofa"] = "tonga";
+	map["port-d\'espagne"] = "trinite-et-tobago";
+	map["tunis"] = "tunisie";
+	map["achgabat"] = "turkmenistan";
+	map["ankara"] = "turquie";
+	map["vaiaku"] = "tuvalu";
+	map["kiev"] = "ukraine";
+	map["montevideo"] = "uruguay";
+	map["port-vila"] = "vanuatu";
+	map["vatican"] = "vatican";
+	map["caracas"] = "venezuela";
+	map["hanoi"] = "vietnam";
+	map["sanaa"] = "yemen";
+	map["lusaka"] = "zambie";
+	map["harare"] = "zimbabwe";*/
+
+	map["paris"] = "france";
 }
 
 int ft_chr_port(std::string port)
@@ -160,32 +363,54 @@ int main(int argc, char **argv)
 		close(sock);
 		return 1;
 	}
-	pollfd *fds = new pollfd();
-	std::cout << "Wd" << '\n';
+	std::map<std::string, std::string> map;
+	ft_charg_map(map);
+	int size_pays = map.size();
+	int size_pays_find = 0;
+	struct pollfd fds[1];
+    fds[0].fd = sock;
+    fds[0].events = POLLIN;
 	while (Stop == 0)
 	{
-		if (poll(fds, 1, 1) == 1)
-			std::cout << "lecture on" << '\n';
+		if (poll(fds, 1, 100) != 1)
+			continue ;
 		bytes = recv(sock, buffer, sizeof(buffer), 0);
 		buffer[bytes] = '\0';
 		if (bytes == 0)
 		{
-			delete(fds);
 			close(sock);
 			return 0;
 		}
-		if (std::strstr(buffer, " PRIVMSG #pays :") != NULL)
+		if (char *msg = std::strstr(buffer, " PRIVMSG #pays :"))
 		{
-			std::cout << std::strstr(buffer, " PRIVMSG #pays :") << '\n';
+			std::string searchKey = msg + 16;
+			size_t found = searchKey.find("\r\n");
+			searchKey.erase(found, 2);
+   			std::map<std::string, std::string>::iterator it = map.find(searchKey);
+			if (it != map.end()) 
+			{
+				size_pays_find ++;
+				std::string message = "PRIVMSG #pays :play well " + searchKey + " and the capital of " + it->second + " " + std::to_string(size_pays_find) + "\\" + std::to_string(size_pays) + "\r\n";
+				send(sock, message.c_str(), message.size(), 0);
+				map.erase(searchKey);
+			}
 		}
 		else if (std::strstr(buffer, " QUIT  :Stop Server") != NULL)
 		{
-			delete(fds);
+			std::cout << "Server irc close." << '\n';
 			close(sock);
 			return 0;
 		}
+		else if (std::strstr(buffer, " KICK #pays+ capitalsbot") != NULL)
+		{
+			std::cout << "the bot was kicked from the server." << '\n';
+			send(sock, "QUIT :leaving\r\n", 16, 0);
+			close(sock);
+			return 0;
+		}
+		else
+			std::cout << buffer << '\n';
 	}
-	delete(fds);
 	send(sock, "QUIT :leaving\r\n", 16, 0);
     close(sock);
 	return 0;
