@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 12:09:23 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/24 17:45:14 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/27 14:26:12 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ void Server::CommandJOIN2(User *user, std::string nameChannel, std::string mdp)
 				{
 					channel->Channel::AddUser(user, mdp, 0);
 					user->setChannel(nameChannel);
-					std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";	
+					std::string response4 = user->getID() + " JOIN " + channel->getName() + "\r\n";
 					send(user->getSocket(), response4.c_str(), response4.size(), 0);
 					channel->SendMsg(user, response4);
 					CommandNAMES(user, channel);
@@ -326,13 +326,13 @@ void	Server::CommandJOIN(User *user, std::string message)
 		if (pos2 == std::string::npos)
 			i = chanel.substr(pos1);
 		else {
-			i = chanel.substr(pos1, pos2);
+			i = chanel.substr(pos1, pos2 - pos1);
 			pos1 = pos2 + 1;
 		}
 		if (pos4 == std::string::npos)
 			j = mdp.substr(pos3);
 		else{
-			j = mdp.substr(pos3, pos4);
+			j = mdp.substr(pos3, pos4 - pos3);
 			pos3 = pos4 + 1;
 		}
 		map[i] = j;
@@ -341,7 +341,10 @@ void	Server::CommandJOIN(User *user, std::string message)
 	}
 	std::map<std::string, std::string>::iterator it;
 	for (it = map.begin(); it != map.end(); ++it)
+	{
+		std::cout << "chanel name :" << it->first << "\n";
 		CommandJOIN2(user, it->first, it->second);
+	}
 }
 
 void	Server::CommandNAMES(User *user, Channel *channel)

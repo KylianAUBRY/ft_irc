@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 14:40:59 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/24 16:01:27 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/27 14:35:59 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,15 +115,18 @@ bool Server::Server_loop()
 		}
 	}
 	if (ChannelTab.size() != 0)
-	{\
+	{
 		std::map<std::string, Channel*> ChannelTab2 = ChannelTab;
-		std::map<std::string, Channel*>::iterator itt;
-		for (itt = ChannelTab2.begin(); itt != ChannelTab2.end(); ++itt)
+		std::map<std::string, Channel*>::iterator itt = ChannelTab2.begin();
+		std::map<std::string, Channel*>::iterator itt2;
+		while (itt != ChannelTab2.end())
 		{
 			std::string name = itt->first;
 			Channel *channel = itt->second;
 			delete channel;
-			ChannelTab2.erase(itt);
+			itt2 = itt;
+			itt++;
+			ChannelTab2.erase(itt2);
 		}
 	}
 	close(this->SServer.fd);
@@ -212,7 +215,7 @@ void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 			size_t pos = 0;
 			if (end != std::string::npos)
 			{
-				//std::cout << user->getUsername() << " command recu entierement : " << user->getbuffCommand();
+				std::cout << user->getUsername() << " command recu entierement : " << user->getbuffCommand();
 				while (end != std::string::npos)
 				{
 					std::string firstCommand = user->getbuffCommand().substr(pos, end + 2 - pos);
