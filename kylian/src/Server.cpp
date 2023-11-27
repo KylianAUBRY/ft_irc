@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 14:40:59 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/27 14:35:59 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/27 15:58:15 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,13 @@ bool Server::Server_start()
 	}
 	if ((this->SServer.fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
 	{
-		std::cout << "Error\nSocket creation failed." << '\n';
+		std::cerr << "Error\nSocket creation failed." << '\n';
 		return false;
 	}
 	if (setsockopt(this->SServer.fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt))
 		|| setsockopt(this->SServer.fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)))
 	{
-		std::cout << "Error\nSocket creation failed." << '\n';
+		std::cerr << "Error\nSocket creation failed." << '\n';
 		return false;
 	}
 	this->SServer.info.sin_family = AF_INET;
@@ -39,12 +39,12 @@ bool Server::Server_start()
 	this->SServer.info.sin_port = htons(this->_port);
 	if (bind(this->SServer.fd, (const struct sockaddr *)&this->SServer.info, sizeof(this->SServer.info)) == -1)
 	{
-		std::cout << "Error\nSocket binding failed." << '\n';
+		std::cerr << "Error\nSocket binding failed." << '\n';
 		return false;
 	}
 	if (listen(this->SServer.fd, 1) == -1)
 	{
-		std::cout << "Error\nListen error." << '\n';
+		std::cerr << "Error\nListen error." << '\n';
 		return false;
 	}
 	this->numConnection = 0;
@@ -215,7 +215,7 @@ void	Server::HandleMessage(User *user, int num, std::vector<pollfd> client_fds)
 			size_t pos = 0;
 			if (end != std::string::npos)
 			{
-				std::cout << user->getUsername() << " command recu entierement : " << user->getbuffCommand();
+				//std::cout << user->getUsername() << " command recu entierement : " << user->getbuffCommand();
 				while (end != std::string::npos)
 				{
 					std::string firstCommand = user->getbuffCommand().substr(pos, end + 2 - pos);

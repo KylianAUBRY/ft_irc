@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 12:09:23 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/27 14:26:12 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/27 15:57:51 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -342,7 +342,6 @@ void	Server::CommandJOIN(User *user, std::string message)
 	std::map<std::string, std::string>::iterator it;
 	for (it = map.begin(); it != map.end(); ++it)
 	{
-		std::cout << "chanel name :" << it->first << "\n";
 		CommandJOIN2(user, it->first, it->second);
 	}
 }

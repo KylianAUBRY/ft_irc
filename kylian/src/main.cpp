@@ -6,7 +6,7 @@
 /*   By: kyaubry <kyaubry@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 13:59:17 by kyaubry           #+#    #+#             */
-/*   Updated: 2023/11/14 15:02:40 by kyaubry          ###   ########.fr       */
+/*   Updated: 2023/11/27 15:57:57 by kyaubry          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int main(int argc, char **argv)
 {
 	if (argc != 3)
 	{
-		std::cout << "./ircserv <port> <password>" << '\n';
+		std::cerr << "./ircserv <port> <password>" << '\n';
 		return 1;
 	}
 	Server serv(argv[1], argv[2]);
