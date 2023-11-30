@@ -388,7 +388,7 @@ int main(int argc, char **argv)
 			if (it != map.end()) 
 			{
 				size_pays_find ++;
-				std::string message = "PRIVMSG #pays :play well " + searchKey + " and the capital of " + it->second + " " + std::to_string(size_pays_find) + "\\" + std::to_string(size_pays) + "\r\n";
+				std::string message = "PRIVMSG #pays :well play " + searchKey + " is the capital of " + it->second + " " + std::to_string(size_pays_find) + "\\" + std::to_string(size_pays) + "\r\n";
 				send(sock, message.c_str(), message.size(), 0);
 				map.erase(searchKey);
 			}
